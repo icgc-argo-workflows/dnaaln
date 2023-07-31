@@ -1,0 +1,290 @@
+{
+  "analysisType": {
+    "name": "sequencing_alignment"
+  },
+  "studyId": "TEST-QA",
+  "workflow": {
+    "workflow_name": "DNA Seq Alignment",
+    "workflow_version": "1.0dev",
+    "genome_build": "GRCh38_Verily_v1",
+    "run_id": "hopeful_engelbart",
+    "session_id": "4aac7a4c-5d3a-4070-b197-150cfe969e4f",
+    "inputs": [
+      {
+        "analysis_type": "sequencing_experiment",
+        "input_analysis_id": "1ff6dbc5-8726-4184-b6db-c58726d184cc"
+      }
+    ]
+  },
+  "files": [
+    {
+      "fileName": "TEST-QA.DO263273.SA624744.wgs.20230728.aln.cram",
+      "fileType": "CRAM",
+      "fileSize": 19423,
+      "fileMd5sum": "03dba6ebed01c26401b190e6d591aafc",
+      "fileAccess": "controlled",
+      "dataType": "Aligned Reads",
+      "info": {
+        "data_category": "Sequencing Reads",
+        "data_subtypes": null,
+        "analysis_tools": [
+          {
+            "SAMTOOLS_CSORT": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "READ_GROUP_BAM_MAP": {
+              "python": "3.10.6"
+            }
+          },
+          {
+            "SAMTOOLS_NSORT": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "BWAMEM2_MEM": {
+              "bwamem2": "2.2.1",
+              "samtools": "1.16.1"
+            }
+          },
+          {
+            "PICARD_FASTQTOSAM": {
+              "picard": "3.0.0"
+            }
+          },
+          {
+            "SAMTOOLS_PAIR_BAM2FQ": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "READ_GROUP_SANITY_CHECK": {
+              "python": "3.10.6"
+            }
+          },
+          {
+            "SAMTOOLS_CONVERT": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "SAMTOOLS_INDEX": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "SAMTOOLS_SING_BAM2FQ": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "BIOBAMBAM_BAMMARKDUPLICATES2": {
+              "bammarkduplicates2": "2.0.183"
+            }
+          },
+          {
+            "SAMTOOLS_MERGE": {
+              "samtools": 1.17
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fileName": "TEST-QA.DO263273.SA624744.wgs.20230728.aln.cram.crai",
+      "fileType": "CRAI",
+      "fileSize": 79,
+      "fileMd5sum": "d9070baed15f3331adda5528a8a9cda1",
+      "fileAccess": "controlled",
+      "dataType": "Aligned Reads Index",
+      "info": {
+        "data_category": "Sequencing Reads",
+        "data_subtypes": null,
+        "analysis_tools": [
+          {
+            "SAMTOOLS_CSORT": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "READ_GROUP_BAM_MAP": {
+              "python": "3.10.6"
+            }
+          },
+          {
+            "SAMTOOLS_NSORT": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "BWAMEM2_MEM": {
+              "bwamem2": "2.2.1",
+              "samtools": "1.16.1"
+            }
+          },
+          {
+            "PICARD_FASTQTOSAM": {
+              "picard": "3.0.0"
+            }
+          },
+          {
+            "SAMTOOLS_PAIR_BAM2FQ": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "READ_GROUP_SANITY_CHECK": {
+              "python": "3.10.6"
+            }
+          },
+          {
+            "SAMTOOLS_CONVERT": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "SAMTOOLS_INDEX": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "SAMTOOLS_SING_BAM2FQ": {
+              "samtools": 1.17
+            }
+          },
+          {
+            "BIOBAMBAM_BAMMARKDUPLICATES2": {
+              "bammarkduplicates2": "2.0.183"
+            }
+          },
+          {
+            "SAMTOOLS_MERGE": {
+              "samtools": 1.17
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "samples": [
+    {
+      "submitterSampleId": "TEST_SUBMITTER_SAMPLE_ID_jpupbblgfaRNA",
+      "sampleType": "Total RNA",
+      "matchedNormalSubmitterSampleId": null,
+      "specimen": {
+        "submitterSpecimenId": "TEST_SUBMITTER_SPECIMEN_ID_jpupbblgfa",
+        "tumourNormalDesignation": "Tumour",
+        "specimenTissueSource": "Buccal cell",
+        "specimenType": "Primary tumour - adjacent to normal"
+      },
+      "donor": {
+        "submitterDonorId": "TEST_SUBMITTER_DONOR_ID_jpupbblgfa",
+        "gender": "Male"
+      }
+    }
+  ],
+  "experiment": {
+    "experimental_strategy": "WGS",
+    "platform": "ILLUMINA",
+    "platform_model": "Illumina HiSeq 2000",
+    "sequencing_center": "QCMG",
+    "sequencing_date": null,
+    "submitter_sequencing_experiment_id": "EXP-9"
+  },
+  "read_group_count": 7,
+  "read_groups": [
+    {
+      "file_r1": "anon_chr1_completeB.bam",
+      "file_r2": "anon_chr1_completeB.bam",
+      "insert_size": null,
+      "is_paired_end": true,
+      "library_name": "RNA-Seq:QCMG:QCMG:130711_7001243_0176_BD2B86ACXX.lane_8.CTTGTA:RNA-Seq:QCMG:Illumina TruSeq for Library_20130620_F",
+      "platform_unit": "QCMG_866d65b8-ff3f-11e4-b413-bdbd66be296d_130711_7001243_0176_BD2B86ACXX.lane_8.CTTGTA.1_8043985",
+      "read_group_id_in_bam": "QCMG:866d65b8-ff3f-11e4-b413-bdbd66be296d:130711_7001243_0176_BD2B86ACXX.lane_8.CTTGTA.1",
+      "read_length_r1": 101,
+      "read_length_r2": 101,
+      "sample_barcode": null,
+      "submitter_read_group_id": "QCMG_866d65b8-ff3f-11e4-b413-bdbd66be296d_130711_7001243_0176_BD2B86ACXX.lane_8.CTTGTA.1_8043985"
+    },
+    {
+      "file_r1": "anon_chr1_completeB.bam",
+      "file_r2": "anon_chr1_completeB.bam",
+      "insert_size": null,
+      "is_paired_end": true,
+      "library_name": "RNA-Seq:QCMG:QCMG:130711_7001243_0176_BD2B86ACXX.lane_5.CTTGTA:RNA-Seq:QCMG:Illumina TruSeq for Library_20130620_F",
+      "platform_unit": "QCMG_91ce15f2-ff3e-11e4-9d73-85b485b025f8_130711_7001243_0176_BD2B86ACXX.lane_5.CTTGTA.1_8043985",
+      "read_group_id_in_bam": "QCMG:91ce15f2-ff3e-11e4-9d73-85b485b025f8:130711_7001243_0176_BD2B86ACXX.lane_5.CTTGTA.1",
+      "read_length_r1": 101,
+      "read_length_r2": 101,
+      "sample_barcode": null,
+      "submitter_read_group_id": "QCMG_91ce15f2-ff3e-11e4-9d73-85b485b025f8_130711_7001243_0176_BD2B86ACXX.lane_5.CTTGTA.1_8043985"
+    },
+    {
+      "file_r1": "anon_chr1_completeB.bam",
+      "file_r2": "anon_chr1_completeB.bam",
+      "insert_size": null,
+      "is_paired_end": true,
+      "library_name": "RNA-Seq:QCMG:QCMG:130711_7001243_0176_BD2B86ACXX.lane_6.CTTGTA:RNA-Seq:QCMG:Illumina TruSeq for Library_20130620_F",
+      "platform_unit": "QCMG_dd3f83b8-ff3e-11e4-81af-910d0943bdb6_130711_7001243_0176_BD2B86ACXX.lane_6.CTTGTA.1_8043985",
+      "read_group_id_in_bam": "QCMG:dd3f83b8-ff3e-11e4-81af-910d0943bdb6:130711_7001243_0176_BD2B86ACXX.lane_6.CTTGTA.1",
+      "read_length_r1": 101,
+      "read_length_r2": 101,
+      "sample_barcode": null,
+      "submitter_read_group_id": "QCMG_dd3f83b8-ff3e-11e4-81af-910d0943bdb6_130711_7001243_0176_BD2B86ACXX.lane_6.CTTGTA.1_8043985"
+    },
+    {
+      "file_r1": "anon_chr1_completeB.bam",
+      "file_r2": "anon_chr1_completeB.bam",
+      "insert_size": null,
+      "is_paired_end": true,
+      "library_name": "RNA-Seq:QCMG:QCMG:130711_7001243_0176_BD2B86ACXX.lane_7.CTTGTA:RNA-Seq:QCMG:Illumina TruSeq for Library_20130620_F",
+      "platform_unit": "QCMG_22f321c6-ff3f-11e4-8e8b-f8a0800c69f0_130711_7001243_0176_BD2B86ACXX.lane_7.CTTGTA.1_8043985",
+      "read_group_id_in_bam": "QCMG:22f321c6-ff3f-11e4-8e8b-f8a0800c69f0:130711_7001243_0176_BD2B86ACXX.lane_7.CTTGTA.1",
+      "read_length_r1": 101,
+      "read_length_r2": 101,
+      "sample_barcode": null,
+      "submitter_read_group_id": "QCMG_22f321c6-ff3f-11e4-8e8b-f8a0800c69f0_130711_7001243_0176_BD2B86ACXX.lane_7.CTTGTA.1_8043985"
+    },
+    {
+      "file_r1": "C0HVY.2_r1.fq.gz",
+      "file_r2": "C0HVY.2_r2.fq.gz",
+      "insert_size": 298,
+      "is_paired_end": true,
+      "library_name": "Pond-147580",
+      "platform_unit": "74_8a",
+      "read_group_id_in_bam": null,
+      "read_length_r1": 150,
+      "read_length_r2": 150,
+      "sample_barcode": null,
+      "submitter_read_group_id": "C0HVY.2"
+    },
+    {
+      "file_r1": "D0RE2.1_r1.fq.gz",
+      "file_r2": null,
+      "insert_size": null,
+      "is_paired_end": false,
+      "library_name": "Pond-147581",
+      "platform_unit": "74_8b",
+      "read_group_id_in_bam": null,
+      "read_length_r1": 150,
+      "read_length_r2": null,
+      "sample_barcode": null,
+      "submitter_read_group_id": "D0RE2"
+    },
+    {
+      "file_r1": "anon_chr1_se.bam",
+      "file_r2": null,
+      "insert_size": null,
+      "is_paired_end": false,
+      "library_name": "RNA-Seq:QCMG:QCMG:130711_7001243_0176_BD2B86ACXX.lane_7.GAACAT:RNA-Seq:QCMG:Illumina TruSeq for Library_20130620_F",
+      "platform_unit": "QCMG_22f321c6-ff3f-11e4-8e8b-f8a0800c69f0_130711_7001243_0176_BD2B86ACXX.lane_7.GAACAT.1_8043985",
+      "read_group_id_in_bam": "QCMG:22f321c6-ff3f-11e4-8e8b-f8a0800c69f0:130711_7001243_0176_BD2B86ACXX.lane_7.GAACAT.1",
+      "read_length_r1": 101,
+      "read_length_r2": null,
+      "sample_barcode": null,
+      "submitter_read_group_id": "QCMG_22f321c6-ff3f-11e4-8e8b-f8a0800c69f0_130711_7001243_0176_BD2B86ACXX.lane_7.GAACAT.1_8043985"
+    }
+  ]
+}

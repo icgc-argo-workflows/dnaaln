@@ -19,31 +19,44 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
     main:
 
     ch_versions = Channel.empty()
-
-    //Recollect read_group aligned bams with metadata and collapse meta and files for merging
     bam.flatten().buffer( size: 2 )
     .map{
         meta,bam ->
         [
-            meta.format,
-            meta.info,
-            meta.read_groups,
-            meta.date,
+            [
+            id:"${meta.study_id}.${meta.patient}.${meta.sample}",
+            study_id:"${meta.study_id}",
+            patient:"${meta.patient}",
+            sex:"${meta.sex}",
+            sample:"${meta.sample}",
+            numLanes:"${meta.numLanes}",
+            experiment:"${meta.experiment}",
+            date:"${meta.date}"
+            ],
+            [
+            read_group:"${meta.id}",
+            data_type:"${meta.data_type}",
+            size:"${meta.size}",
+            ],
             bam
         ]
-    }
-    .groupTuple(by: 1)
-    .map{
-        format,info,read_groups,date,files ->
+    }.groupTuple(by: 0).
+    map{
+        meta,info,bam ->
         [
             [
-                format:format,
-                info:info,
-                date : date.first(),
-                read_groups:read_groups.collect(),
-                id: "${info.studyId}.${info.donorId}.${info.sampleId}.${read_groups.experiment.experimental_strategy.unique()[0]}"
-            ],
-            files.collect()
+            id:"${meta.study_id}.${meta.patient}.${meta.sample}",
+            study_id:"${meta.study_id}",
+            patient:"${meta.patient}",
+            sex:"${meta.sex}",
+            sample:"${meta.sample}",
+            numLanes:"${meta.numLanes}",
+            experiment:"${meta.experiment}",
+            date:"${meta.date}",
+            read_group:"${info.read_group.collect()}",
+            data_type:"${info.data_type.collect()}",
+            size:"${info.size.collect()}"
+            ],bam.collect()
         ]
     }.set{ch_bams}
 
@@ -57,39 +70,56 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
     //Mark duplicates
     SAMTOOLS_MERGE.out.bam
         .map{
-        meta,file ->
-        [
+            meta,file ->
             [
-                format:meta.format,
-                info:meta.info,
-                date : meta.date,
-                read_groups:meta.read_groups,
-                id: "${meta.id}.csort.markdup"
-            ],
-            file
-        ]
+                [
+                    id:"${meta.id}.csort.markdup",
+                    study_id:"${meta.study_id}",
+                    patient:"${meta.patient}",
+                    sex:"${meta.sex}",
+                    sample:"${meta.sample}",
+                    date:"${meta.date}",
+                    numLanes:"${meta.numLanes}",
+                    read_group:"${meta.read_group}",
+                    data_type:"${meta.data_type}",
+                    size:"${meta.size}",
+                    experiment:"${meta.experiment}"
+                ],
+                file
+            ]
     }.set{ch_mardkup}
 
-    BIOBAMBAM_BAMMARKDUPLICATES2(
-        ch_mardkup
-    )
-    ch_versions = ch_versions.mix(BIOBAMBAM_BAMMARKDUPLICATES2.out.versions)
+    if (params.tools.split(',').contains('markdup')){
+        BIOBAMBAM_BAMMARKDUPLICATES2(
+            ch_mardkup
+        )
+        ch_versions = ch_versions.mix(BIOBAMBAM_BAMMARKDUPLICATES2.out.versions)
+        BIOBAMBAM_BAMMARKDUPLICATES2.out.bam.set{markdup_bam}
+    } else {
+        ch_mardkup.set{markdup_bam}
+    }
 
     //Index Csort.Markdup.Bam 
-    SAMTOOLS_INDEX(BIOBAMBAM_BAMMARKDUPLICATES2.out.bam)
+    SAMTOOLS_INDEX(markdup_bam)
     ch_versions = ch_versions.mix(SAMTOOLS_INDEX.out.versions)
 
     //Use new index and Bam for conversion to CRAM
-    BIOBAMBAM_BAMMARKDUPLICATES2.out.bam.combine(SAMTOOLS_INDEX.out.bai)
+    markdup_bam.combine(SAMTOOLS_INDEX.out.bai)
     .map{
         metaA,bam,metaB,index ->
         [
             [
-                format:metaA.format,
-                info:metaA.info,
-                date: metaA.date,
-                read_groups:metaA.read_groups,
-                id: metaA.id
+                id:"${metaA.id}",
+                study_id:"${metaA.study_id}",
+                patient:"${metaA.patient}",
+                sex:"${metaA.sex}",
+                sample:"${metaA.sample}",
+                numLanes:"${metaA.numLanes}",
+                date:"${metaA.date}",
+                read_group:"${metaA.read_group}",
+                data_type:"${metaA.data_type}",
+                size:"${metaA.size}",
+                experiment:"${metaA.experiment}"
             ],
             bam,index
         ]
@@ -103,33 +133,51 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
     )
     ch_versions = ch_versions.mix(SAMTOOLS_CONVERT.out.versions)
 
-    TAR(
-        BIOBAMBAM_BAMMARKDUPLICATES2.out.metrics
-        .map{ meta,file-> 
-        [
-            [   study_id: "${meta.info.studyId}",
-                id:"${meta.info.studyId}.${meta.info.donorId}.${meta.info.sampleId}.${meta.read_groups.experiment.experimental_strategy.first()}.${meta.date}.aln.cram.duplicates_metrics"
-            ],file
-        ]
-        }
-    )
+    if (params.tools.split(',').contains('markdup')){
+        TAR(
+            BIOBAMBAM_BAMMARKDUPLICATES2.out.metrics
+            .map{ meta,file-> 
+            [
+                [   
+                    study_id:"${meta.study_id}",
+                    patient:"${meta.patient}",
+                    sex:"${meta.sex}",
+                    sample:"${meta.sample}",
+                    date:"${meta.date}",
+                    numLanes:"${meta.numLanes}",
+                    read_group:"${meta.read_group}",
+                    data_type:"${meta.data_type}",
+                    size:"${meta.size}",
+                    experiment:"${meta.experiment}",
+                    id:"${meta.study_id}.${meta.patient}.${meta.sample}.${meta.experiment}.${meta.date}.aln.cram.duplicates_metrics"
+                ],file
+            ]
+            }
+        )
+        TAR.out.stats.set{metrics}
+        Channel.empty()
+        .mix(SAMTOOLS_MERGE.out.bam.map{meta,file -> file}.collect())
+        .mix(BIOBAMBAM_BAMMARKDUPLICATES2.out.bam.map{meta,file -> file}.collect())
+        .mix(SAMTOOLS_INDEX.out.bai.map{meta,file -> file}.collect())
+        .mix(TAR.out.stats.map{meta,file -> file}.collect())
+        .collect()
+        .set{ch_cleanup}
+    } else {
+        Channel.empty()
+        .mix(SAMTOOLS_MERGE.out.bam.map{meta,file -> file}.collect())
+        .mix(SAMTOOLS_INDEX.out.bai.map{meta,file -> file}.collect())
+        .collect()
+        .set{ch_cleanup}
+
+        Channel.empty().set{metrics}  
+    }
+
     ch_versions= ch_versions.map{ file -> file.moveTo("${file.getParent()}/.${file.getName()}")}
     
-
-    Channel.empty()
-    .mix(SAMTOOLS_MERGE.out.bam.map{meta,file -> file}.collect())
-    .mix(BIOBAMBAM_BAMMARKDUPLICATES2.out.bam.map{meta,file -> file}.collect())
-    .mix(SAMTOOLS_INDEX.out.bai.map{meta,file -> file}.collect())
-    .mix(TAR.out.stats.map{meta,file -> file}.collect())
-    .collect()
-    .set{ch_cleanup}
-
-
     emit:
     cram_alignment_index = SAMTOOLS_CONVERT.out.alignment_index
-    bam_alignment_index = ch_convert
     tmp_files = ch_cleanup
-    metrics = TAR.out.stats
+    metrics = metrics
     versions = ch_versions                     // channel: [ versions.yml ]
 }
 

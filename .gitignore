@@ -87,3 +87,5 @@ test/old/GRCh38_Verily_v1.fasta.ann
 test/old/GRCh38_Verily_v1.fasta.amb
 test/old/GRCh38_Verily_v1.fasta.0123
 test/old/GRCh38_Verily_v1.dict
+test/reference/GRCh38_Verily_v1.fasta.sa
+test/reference/GRCh38_Verily_v1.fasta.bwt

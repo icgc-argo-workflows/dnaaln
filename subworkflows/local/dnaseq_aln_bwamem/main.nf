@@ -5,8 +5,6 @@
 // TODO nf-core: A subworkflow SHOULD import at least two modules
 
 include { SAMTOOLS_SORT as SAMTOOLS_NSORT                            } from '../../../modules/nf-core/samtools/sort/main'
-include { SAMTOOLS_BAM2FQ as SAMTOOLS_PAIR_BAM2FQ                    } from '../../../modules/nf-core/samtools/bam2fq/main'
-include { SAMTOOLS_BAM2FQ as SAMTOOLS_SING_BAM2FQ                    } from '../../../modules/nf-core/samtools/bam2fq/main'
 include { BWA_MEM                                                    } from '../../../modules/nf-core/bwa/mem/main'
 include { SAMTOOLS_SORT as SAMTOOLS_CSORT                            } from '../../../modules/nf-core/samtools/sort/main'
 
@@ -14,14 +12,13 @@ workflow DNASEQ_ALN_BWAMEM {
 
     take:
     sample_files
-    analysis_meta
     reference_files
 
     main:
 
     ch_versions = Channel.empty()
 
-    //Sort BAMs by read names
+    //Collect Readgroups and add Date and perform Alignment
     sample_files.map{
         meta,files ->
         [
@@ -49,7 +46,7 @@ workflow DNASEQ_ALN_BWAMEM {
     )
     ch_versions = ch_versions.mix(BWA_MEM.out.versions)
 
-    //Coordinate sort each aligned BAM
+    //Coordinate sort each aligned BAM. Append CSORT ID to differentiate
     BWA_MEM.out.bam.map{
         meta,bam ->
         [
@@ -77,7 +74,7 @@ workflow DNASEQ_ALN_BWAMEM {
     //Prep files for cleanup
     Channel.empty()
     .mix(BWA_MEM.out.bam.map{meta,file -> file}.collect())
-    .mix(SAMTOOLS_CSORT.out.bam.map{meta,file -> file}.collect())
+    .mix(ch_mem.map{meta,files -> files}.collect())
     .collect()
     .set{ch_cleanup}
     

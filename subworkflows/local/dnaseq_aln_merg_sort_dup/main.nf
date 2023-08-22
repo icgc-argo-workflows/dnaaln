@@ -13,12 +13,13 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
 
     take:
     bam
-    analysis_metadata
     reference_files
 
     main:
 
     ch_versions = Channel.empty()
+    //Collect channel (e.g. [metaA,bamA,metaB,bamB] and seperate back in channels of [meta,bam])
+    //Simplfy metadata to group and collect BAMs : [meta, [bamA,bamB,bamC]] for merging
     bam.flatten().buffer( size: 2 )
     .map{
         meta,bam ->
@@ -67,7 +68,7 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
     )
     ch_versions = ch_versions.mix(SAMTOOLS_MERGE.out.versions)
 
-    //Mark duplicates
+    //If markdup specified, markdup file else return as is
     SAMTOOLS_MERGE.out.bam
         .map{
             meta,file ->
@@ -133,6 +134,7 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
     )
     ch_versions = ch_versions.mix(SAMTOOLS_CONVERT.out.versions)
 
+    //If Markdup specified, TAR metrics file
     if (params.tools.split(',').contains('markdup')){
         TAR(
             BIOBAMBAM_BAMMARKDUPLICATES2.out.metrics
@@ -156,14 +158,17 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
         )
         TAR.out.stats.set{metrics}
         Channel.empty()
+        .mix(ch_bams.map{meta,files -> files}.collect())
         .mix(SAMTOOLS_MERGE.out.bam.map{meta,file -> file}.collect())
         .mix(BIOBAMBAM_BAMMARKDUPLICATES2.out.bam.map{meta,file -> file}.collect())
         .mix(SAMTOOLS_INDEX.out.bai.map{meta,file -> file}.collect())
         .mix(TAR.out.stats.map{meta,file -> file}.collect())
+    
         .collect()
         .set{ch_cleanup}
     } else {
         Channel.empty()
+        .mix(ch_bams.map{meta,files -> files}.collect())
         .mix(SAMTOOLS_MERGE.out.bam.map{meta,file -> file}.collect())
         .mix(SAMTOOLS_INDEX.out.bai.map{meta,file -> file}.collect())
         .collect()

@@ -46,7 +46,9 @@ workflow DNASEQ_ALN {
     //If any uploading is required, api token needed
     if (params.tools.split(',').contains('up_aln') || params.tools.split(',').contains('up_qc') || analysis_id){             
         if (!params.api_token){
-            exit 1, "Error Missing Params. `--api_token` must be supplied when uploading."
+            if (!params.api_download_token || !params.api_upload_token){
+                exit 1, "Error Missing Params. `--api_token` or `api_upload_token` and `api_download_token` must be supplied when uploading."
+            }
         }
     }    
     //Mandatory requirement check. A reference FASTA file must be presented.

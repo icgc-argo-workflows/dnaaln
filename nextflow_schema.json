@@ -136,6 +136,14 @@
       "type": "string",
       "default": null
     },
+    "api_download_token": {
+      "type": "string",
+      "default": null
+    },
+    "api_score_token": {
+      "type": "string",
+      "default": null
+    },
     "song_url": {
       "type": "string",
       "default": null

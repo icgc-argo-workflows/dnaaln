@@ -305,7 +305,7 @@ workflow DNASEQ_ALN {
                 ch_cleanup_M=ch_cleanup_M
                 .mix(PAYLOAD_ALIGNMENT_M.out.payload_files.map{meta,analysis,files -> files.first()}.collect())
 
-                CLEAN_ALN_M2(
+                CLEAN_ALN_M(
                     ch_cleanup_M.unique().collect(),
                     UPLOAD_ALIGNMENT_M.out.analysis_id
                 )

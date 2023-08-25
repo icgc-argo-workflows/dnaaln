@@ -36,6 +36,8 @@ workflow DNASEQ_ALN {
     main:
 
     ch_versions = Channel.empty()
+    ch_cleanup_M = Channel.empty()
+    ch_cleanup_M2 = Channel.empty()
     //Enforce profile so that command is run with "--profile docker,debug_qa"
     if (!"${workflow.profile}".contains('docker') && !"${workflow.profile}".contains('singularity')){
         exit 1, "Error Missing profile. `-profile` must be specified with the engines `docker` or `singularity`."
@@ -75,7 +77,6 @@ workflow DNASEQ_ALN {
     //Return FASTQ files for alignment and JSON
     sample_files=STAGE_INPUT.out.sample_files
     analysis_meta=STAGE_INPUT.out.analysis_meta
-
     //BWAMEM2
     if (params.tools.split(',').contains('bwamem2_aln')){
         //Perform Alignment per Read group
@@ -268,68 +269,52 @@ workflow DNASEQ_ALN {
 
     //Clean up step
     if (params.tools.split(',').contains('cleanup')){
-        //If Upload Alignment workflow specified, listen to upload channel otherwise out of MERG_SORT_DUP
-        if (params.tools.split(',').contains('up_aln')){
-            if ( params.tools.split(',').contains('bwamem2_aln')){
+        ch_cleanup_M=ch_cleanup_M.mix(analysis_meta.map{meta,metadata -> metadata}.first().collect())
+        ch_cleanup_M2=ch_cleanup_M2.mix(analysis_meta.map{meta,metadata -> metadata}.first().collect())
+        if ( params.tools.split(',').contains('bwamem2_aln')){
+            ch_cleanup_M2=ch_cleanup_M2
+            .mix(BWAMEM2.out.tmp_files.collect())
+            .mix(MERG_SORT_DUP_M2.out.tmp_files.collect())
+            .mix(MERG_SORT_DUP_M2.out.cram_alignment_index.map{meta,cram,crai -> cram}.collect())
+
+            if ( params.tools.split(',').contains('up_aln')){
+                ch_cleanup_M2=ch_cleanup_M2
+                .mix(PAYLOAD_ALIGNMENT_M2.out.payload_files.map{meta,analysis,files -> files.first()}.collect())
+
                 CLEAN_ALN_M2(
-                    Channel.empty()
-                    .mix(analysis_meta.map{meta,metadata -> metadata}.collect().first())
-                    .mix(BWAMEM2.out.tmp_files.collect())
-                    .mix(MERG_SORT_DUP_M2.out.tmp_files.collect())
-                    .mix(MERG_SORT_DUP_M2.out.cram_alignment_index.map{meta,cram,crai -> cram}.collect())
-                    .mix(PAYLOAD_ALIGNMENT_M2.out.payload_files.map{meta,analysis,files -> files.first()}.collect())
-                    .unique()
-                    .collect(),
-                    Channel.empty()
-                    .mix(UPLOAD_ALIGNMENT_M2.out.analysis_id)
-                    .collect()
+                    ch_cleanup_M2.unique().collect(),
+                    UPLOAD_ALIGNMENT_M2.out.analysis_id
                 )
-            }
-            if (params.tools.split(',').contains('bwamem_aln')){
-                CLEAN_ALN_M(
-                    Channel.empty()
-                    .mix(analysis_meta.map{meta,metadata -> metadata}.first())
-                    .mix(BWAMEM.out.tmp_files.collect())
-                    .mix(MERG_SORT_DUP_M.out.tmp_files.collect())
-                    .mix(MERG_SORT_DUP_M.out.cram_alignment_index.map{meta,cram,crai -> cram}.collect())
-                    .mix(PAYLOAD_ALIGNMENT_M.out.payload_files.map{meta,analysis,files -> files.first()}.collect())
-                    .unique()
-                    .collect(),
-                    Channel.empty()
-                    .mix(UPLOAD_ALIGNMENT_M.out.analysis_id)
-                    .collect()
-                    )
-            }
-        } else {
-            if ( params.tools.split(',').contains('bwamem2_aln')){
+            } else {
                 CLEAN_ALN_M2(
-                    Channel.empty()
-                    .mix(analysis_meta.map{meta,metadata -> metadata}.first())
-                    .mix(BWAMEM2.out.tmp_files.collect())
-                    .mix(MERG_SORT_DUP_M2.out.tmp_files.collect())
-                    .mix(MERG_SORT_DUP_M2.out.cram_alignment_index.map{meta,cram,crai -> cram}.collect())
-                    .unique()
-                    .collect(),
-                    Channel.empty()
-                    .mix(MERG_SORT_DUP_M2.out.cram_alignment_index.map{meta,cram,crai -> cram})
-                    .collect()
+                    ch_cleanup_M2.unique().collect(),
+                    MERG_SORT_DUP_M2.out.cram_alignment_index
                 )
-            }
-            if (params.tools.split(',').contains('bwamem_aln')){
-                CLEAN_ALN_M(
-                    Channel.empty()
-                    .mix(analysis_meta.map{meta,metadata -> metadata}.first())
-                    .mix(BWAMEM.out.tmp_files.collect())
-                    .mix(MERG_SORT_DUP_M.out.tmp_files.collect())
-                    .mix(MERG_SORT_DUP_M.out.cram_alignment_index.map{meta,cram,crai -> cram}.collect())
-                    .unique()
-                    .collect(),
-                    Channel.empty()
-                    .mix(MERG_SORT_DUP_M2.out.cram_alignment_index.map{meta,cram,crai -> cram})
-                    .collect()
-                    )
             }
         }
+        if ( params.tools.split(',').contains('bwamem_aln')){
+            ch_cleanup_M=ch_cleanup_M
+            .mix(BWAMEM.out.tmp_files.collect())
+            .mix(MERG_SORT_DUP_M.out.tmp_files.collect())
+            .mix(MERG_SORT_DUP_M.out.cram_alignment_index.map{meta,cram,crai -> cram}.collect())
+
+            if ( params.tools.split(',').contains('up_aln')){
+                ch_cleanup_M=ch_cleanup_M
+                .mix(PAYLOAD_ALIGNMENT_M.out.payload_files.map{meta,analysis,files -> files.first()}.collect())
+
+                CLEAN_ALN_M2(
+                    ch_cleanup_M.unique().collect(),
+                    UPLOAD_ALIGNMENT_M.out.analysis_id
+                )
+            } else {
+                
+                CLEAN_ALN_M(
+                    ch_cleanup_M.unique().collect(),
+                    MERG_SORT_DUP_M.out.cram_alignment_index
+                )
+            }
+        }
+            
         //If Upload QC workflow specified, listen to upload channel 
         if (params.tools.split(',').contains('up_qc') && params.tools.split(',').contains('markdup')){
                 CLEAN_QC_M2(

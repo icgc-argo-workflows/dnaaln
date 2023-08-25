@@ -20,7 +20,6 @@ workflow DNASEQ_INDEX {
     ch_versions = Channel.empty()
     reference_files_M = Channel.empty()
     reference_files_M2 = Channel.empty()
-
     reference_fasta_file=file(reference_fasta, checkIfExists: true)
 
     if (params.tools.split(',').contains('index')){
@@ -32,7 +31,9 @@ workflow DNASEQ_INDEX {
             ]
         }
         SAMTOOLS_FAIDX(ch_index,Channel.of([[id:"placeholder"],file("NO_FILE")])) // val(meta), path(file)
-        GATK4_CREATESEQUENCEDICTIONARY(ch_index) // val(meta), path(file)
+        GATK4_CREATESEQUENCEDICTIONARY(ch_index) // val(meta), path(file) 
+        ch_versions = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
+        ch_versions = ch_versions.mix(GATK4_CREATESEQUENCEDICTIONARY.out.versions)
         if (params.tools.split(',').contains('bwamem2_aln')){
             BWAMEM2_INDEX(ch_index) // val(meta), path(file)
             BWAMEM2_INDEX.out.index.map{
@@ -76,12 +77,10 @@ workflow DNASEQ_INDEX {
                 ]
             }
             .set{reference_files_M}
-        } else {
+        }
+        if ((!params.tools.split(',').contains('bwamem2_aln')) && (!params.tools.split(',').contains('bwamem_aln'))) {
             exit 1, "Error Missing Params. When `--tools index` is used, `bwamem2_aln` and/or `bwamem_aln` must be specified."
         }
-            
-        ch_versions = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
-        ch_versions = ch_versions.mix(GATK4_CREATESEQUENCEDICTIONARY.out.versions)
     } else {
         if (reference_fasta_secondary){
             reference_fasta_secondary_dir=reference_fasta_secondary

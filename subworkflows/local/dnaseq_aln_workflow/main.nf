@@ -45,6 +45,9 @@ workflow DNASEQ_ALN {
     if (!"${workflow.profile}".contains('debug_qa') && !"${workflow.profile}".contains('debug_dev') && !"${workflow.profile}".contains('collab')){
         exit 1, "Error Missing profile. `-profile` must be specified with the engines `debug_qa`,`debug_dev`, or `collab`."
     }
+    if (params.tools.split(',').contains('bwamem2_aln')==false && params.tools.split(',').contains('bwamem_aln')==false) {
+        exit 1, "Error Missing Params. `--tools bwamem2_aln`,`--tools bwamem_aln`, or `--tools bwamem_aln,bwamem2_aln` must be specified."
+    }
     //If any uploading is required, api token needed
     if (params.tools.split(',').contains('up_aln') || params.tools.split(',').contains('up_qc') || analysis_id){             
         if (!params.api_token){

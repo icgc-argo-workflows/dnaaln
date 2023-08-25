@@ -225,7 +225,7 @@ workflow DNASEQ_ALN {
             )
             ch_versions = ch_versions.mix(PAYLOAD_METRICS_M.out.versions.map{ file -> file.moveTo("${file.getParent()}/.${file.getName()}")})  
 
-            UPLOAD_QC_M(PAYLOAD_QC_M.out.payload_files) // [val(meta), path("*.payload.json"), [path(tar.gz)]
+            UPLOAD_QC_M(PAYLOAD_METRICS_M.out.payload_files) // [val(meta), path("*.payload.json"), [path(tar.gz)]
             ch_versions = ch_versions.mix(UPLOAD_QC_M.out.versions.map{ file -> file.moveTo("${file.getParent()}/.${file.getName()}")})  
         }
         if (params.tools.split(',').contains('bwamem2_aln')){
@@ -261,7 +261,7 @@ workflow DNASEQ_ALN {
             )
             ch_versions = ch_versions.mix(PAYLOAD_METRICS_M2.out.versions.map{ file -> file.moveTo("${file.getParent()}/.${file.getName()}")})            
 
-            UPLOAD_QC_M2(PAYLOAD_QC_M2.out.payload_files) // [val(meta), path("*.payload.json"), [path(tar.gz)]
+            UPLOAD_QC_M2(PAYLOAD_METRICS_M2.out.payload_files) // [val(meta), path("*.payload.json"), [path(tar.gz)]
             ch_versions = ch_versions.mix(UPLOAD_QC_M2.out.versions.map{ file -> file.moveTo("${file.getParent()}/.${file.getName()}")})
         }
     }

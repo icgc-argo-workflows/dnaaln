@@ -110,10 +110,10 @@ workflow DNASEQ_INDEX {
         }
         if (params.tools.split(',').contains('bwamem_aln')){
             Channel.empty()
-            .mix(Channel.fromPath("${reference_fasta_secondary_dir}/${reference_fasta_file.getBaseName()}.sa",checkIfExists: true))
+            .mix(Channel.fromPath("${reference_fasta_secondary_dir}/${reference_fasta_file.getName()}.sa",checkIfExists: true))
             .mix(Channel.fromPath("${reference_fasta_secondary_dir}/${reference_fasta_file.getName()}.amb",checkIfExists: true))
             .mix(Channel.fromPath("${reference_fasta_secondary_dir}/${reference_fasta_file.getName()}.ann",checkIfExists: true))
-            .mix(Channel.fromPath("${reference_fasta_secondary_dir}/${reference_fasta_file.getBaseName()}.bwt",checkIfExists: true))
+            .mix(Channel.fromPath("${reference_fasta_secondary_dir}/${reference_fasta_file.getName()}.bwt",checkIfExists: true))
             .mix(Channel.fromPath("${reference_fasta_secondary_dir}/${reference_fasta_file.getName()}.pac",checkIfExists: true))
             .mix(Channel.fromPath("${reference_fasta_secondary_dir}/${reference_fasta_file.getName()}.fai",checkIfExists: true))
             .mix(Channel.fromPath("${reference_fasta_secondary_dir}/${reference_fasta_file.getBaseName()}.dict",checkIfExists: true))

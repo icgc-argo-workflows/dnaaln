@@ -45,7 +45,7 @@ workflow STAGE_INPUT {
     .collectFile(keepHeader: true, name: 'sample_sheet.csv', storeDir: "${params.outdir}/csv")
     .splitCsv(header:true)
     .map{ row ->
-      if (row.analysis_type == "sequencing_experiment" && !row.single_end) {
+      if (row.analysis_type == "sequencing_experiment" && row.single_end == 'False') {
         tuple([
           id:"${row.sample}-${row.lane}".toString(), 
           study_id:row.study_id,
@@ -61,7 +61,7 @@ workflow STAGE_INPUT {
           numLanes:row.read_group_count], 
           [file(row.fastq_1), file(row.fastq_2)]) 
       }
-      else if (row.analysis_type == "sequencing_experiment" && row.single_end) {
+      else if (row.analysis_type == "sequencing_experiment" && row.single_end == 'True') {
         tuple([
           id:"${row.sample}-${row.lane}".toString(), 
           study_id:row.study_id,
@@ -99,7 +99,7 @@ workflow STAGE_INPUT {
       }
     }
     .set { ch_input_sample }
-
+    
     ch_input_sample.combine(analysis_metadata)
     .map { meta, files, analysis_json -> 
     [meta, analysis_json]

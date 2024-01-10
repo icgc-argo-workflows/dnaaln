@@ -34,6 +34,7 @@ process CHECKINPUT {
         ;;
     'DNA Alignment')
         dnaaln.py \\
+            $samplesheet \\
             samplesheet.valid.csv
         ;;
     'Germline Variant Call')

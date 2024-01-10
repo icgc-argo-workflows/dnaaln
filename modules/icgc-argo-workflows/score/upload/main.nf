@@ -1,5 +1,4 @@
 
-
 process SCORE_UPLOAD {
     tag "${analysis_id}"
     label 'process_medium'

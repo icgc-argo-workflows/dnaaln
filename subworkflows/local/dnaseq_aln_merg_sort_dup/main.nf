@@ -151,7 +151,7 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
                     data_type:"${meta.data_type}",
                     size:"${meta.size}",
                     experiment:"${meta.experiment}",
-                    id:"${meta.study_id}.${meta.patient}.${meta.sample}.${meta.experiment}.${meta.date}.aln.cram.duplicates_metrics"
+                    id:"${meta.study_id}.${meta.patient}.${meta.sample}.${meta.experiment}.aln.cram.duplicates_metrics"
                 ],file
             ]
             }
@@ -162,8 +162,6 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
         .mix(SAMTOOLS_MERGE.out.bam.map{meta,file -> file}.collect())
         .mix(BIOBAMBAM_BAMMARKDUPLICATES2.out.bam.map{meta,file -> file}.collect())
         .mix(SAMTOOLS_INDEX.out.bai.map{meta,file -> file}.collect())
-        .mix(TAR.out.stats.map{meta,file -> file}.collect())
-    
         .collect()
         .set{ch_cleanup}
     } else {

@@ -1,5 +1,3 @@
-
-
 process SCORE_DOWNLOAD {
     tag "${analysis_id}"
     label 'process_medium'

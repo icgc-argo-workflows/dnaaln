@@ -33,8 +33,7 @@ workflow DNASEQ_ALN_BWAMEM {
                 data_type:"${meta.data_type}",
                 size:"${meta.size}",
                 numLanes:"${meta.numLanes}",
-                experiment:"${meta.experiment}",
-                date :"${new Date().format("yyyyMMdd")}"
+                experiment:"${meta.experiment}"
             ],files
         ]
     }.set{ch_mem}
@@ -61,8 +60,7 @@ workflow DNASEQ_ALN_BWAMEM {
             data_type:"${meta.data_type}",
             size:"${meta.size}",
             numLanes:"${meta.numLanes}",
-            experiment:"${meta.experiment}",
-            date:"${meta.date}"
+            experiment:"${meta.experiment}"
             ],bam
         ]
     }.set{ch_csort}
@@ -74,7 +72,6 @@ workflow DNASEQ_ALN_BWAMEM {
     //Prep files for cleanup
     Channel.empty()
     .mix(BWA_MEM.out.bam.map{meta,file -> file}.collect())
-    .mix(ch_mem.map{meta,files -> files}.collect())
     .collect()
     .set{ch_cleanup}
     

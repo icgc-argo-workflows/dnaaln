@@ -122,7 +122,7 @@ analysis_type,study_id,patient,sex,status,sample,lane,fastq_1,fastq_2,read_group
         self._validate_analysis_json(row) if row.get(self._analysis_json_col) else ""
 
         tmp_dict={
-            "analysis_type" : row[self._analysis_type_col] if row.get(self._analysis_type_col) else None,
+            "analysis_type" : row[self._analysis_type_col] if row.get(self._analysis_type_col) else "sequencing_experiment",
             "study_id" : row[self._study_id_col] if row.get(self._study_id_col) else "LOCAL",
             "patient" : row[self._patient_col] if row.get(self._patient_col) else row[self._sample_col],
             "sex" : row[self._sex_col] if row.get(self._sex_col) else "NA",
@@ -131,7 +131,7 @@ analysis_type,study_id,patient,sex,status,sample,lane,fastq_1,fastq_2,read_group
             "lane" : row[self._lane_col],
             "fastq_1" : row[self._fastq_1_col],
             "fastq_2" : row[self._fastq_2_col] if row.get(self._fastq_2_col) else "NO_FILE",
-            "single_end" : row[self._single_end_col],
+            "single_end" : row[self._single_end_col].lower(),
             "read_group_count" : row[self._read_group_count_col],
             "experiment" : row[self._experiment_col] if row.get(self._experiment_col) else "WGS",
             "analysis_json": row[self._analysis_json_col] if row.get(self._analysis_json_col) else None
@@ -234,7 +234,7 @@ analysis_type,study_id,patient,sex,status,sample,lane,fastq_1,fastq_2,read_group
 
     def _validate_fastq_2(self, row):
         """Assert that expected fastq_2 is correct."""
-        if row[self._single_end_col]=="True":
+        if row[self._single_end_col].lower()=="true":
             return 
 
         if len(row[self._fastq_2_col]) <= 0:
@@ -253,7 +253,7 @@ analysis_type,study_id,patient,sex,status,sample,lane,fastq_1,fastq_2,read_group
         """Assert that expected single_end is correct."""
         if len(row[self._single_end_col]) <= 0:
             raise AssertionError("'single_end' input is required.")
-        if row[self._single_end_col]!="True" and row[self._single_end_col]!="False":
+        if row[self._single_end_col].lower()!="true" and row[self._single_end_col].lower()!="false":
             raise AssertionError("'single_end' should be specifed as \"True\" or \"False\".") 
     
 

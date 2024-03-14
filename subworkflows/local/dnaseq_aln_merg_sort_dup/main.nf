@@ -32,7 +32,8 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
             sample:"${meta.sample}",
             numLanes:"${meta.numLanes}",
             experiment:"${meta.experiment}",
-            date:"${meta.date}"
+            date:"${meta.date}",
+            tool: "${meta.tool}"
             ],
             [
             read_group:"${meta.id}",
@@ -56,7 +57,8 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
             date:"${meta.date}",
             read_group:"${info.read_group.collect()}",
             data_type:"${info.data_type.collect()}",
-            size:"${info.size.collect()}"
+            size:"${info.size.collect()}",
+            tool: "${meta.tool}"
             ],bam.collect()
         ]
     }.set{ch_bams}
@@ -84,7 +86,8 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
                     read_group:"${meta.read_group}",
                     data_type:"${meta.data_type}",
                     size:"${meta.size}",
-                    experiment:"${meta.experiment}"
+                    experiment:"${meta.experiment}",
+                    tool: "${meta.tool}"
                 ],
                 file
             ]
@@ -120,7 +123,8 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
                 read_group:"${metaA.read_group}",
                 data_type:"${metaA.data_type}",
                 size:"${metaA.size}",
-                experiment:"${metaA.experiment}"
+                experiment:"${metaA.experiment}",
+                tool: "${metaA.tool}"
             ],
             bam,index
         ]
@@ -151,7 +155,8 @@ workflow DNASEQ_ALN_MERG_SORT_DUP {
                     data_type:"${meta.data_type}",
                     size:"${meta.size}",
                     experiment:"${meta.experiment}",
-                    id:"${meta.study_id}.${meta.patient}.${meta.sample}.${meta.experiment}.aln.cram.duplicates_metrics"
+                    id:"${meta.study_id}.${meta.patient}.${meta.sample}.${meta.experiment}.aln.cram.duplicates_metrics",
+                    tools:"${meta.tool}"
                 ],file
             ]
             }

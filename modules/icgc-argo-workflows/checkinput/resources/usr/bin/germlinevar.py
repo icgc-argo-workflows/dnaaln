@@ -97,7 +97,7 @@ analysis_type,study_id,patient,sex,status,sample,lane,fastq_1,fastq_2,read_group
         self._validate_analysis_json(row) if row.get(self._analysis_json_col) else ""
 
         tmp_dict={
-            "analysis_type" : row[self._analysis_type_col] if row.get(self._analysis_type_col) else None,
+            "analysis_type" : row[self._analysis_type_col] if row.get(self._analysis_type_col) else "sequencing_alignment",
             "study_id" : row[self._study_id_col] if row.get(self._study_id_col) else "LOCAL",
             "patient" : row[self._patient_col] if row.get(self._patient_col) else row[self._sample_col],
             "sex" : row[self._sex_col] if row.get(self._sex_col) else "NA",

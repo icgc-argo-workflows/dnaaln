@@ -6,7 +6,8 @@ include { CHECKINPUT                   } from '../../../modules/icgc-argo-workfl
 workflow STAGE_INPUT {
 
     take:
-    study_analysis  // channel: study_id, analysis_id
+    study_id // channel: study_id
+    analysis_ids // channel: analysis_ids
     samplesheet  // channel: samplesheet
     
     main:
@@ -27,8 +28,13 @@ workflow STAGE_INPUT {
     //Apply appropriate action if API_TOKEN is supplied
     if (params.api_token || params.api_download_token){
       //If IDs are present proceed with download otherwise exit
-      if (study_analysis[0] && study_analysis[1]){
-      SONG_SCORE_DOWNLOAD( study_analysis )
+      if (study_id && analysis_ids){
+
+      Channel.from(analysis_ids.split(","))
+      .map{analysis_id -> tuple([study_id,analysis_id])}
+      .set{ch_study_analysis}
+
+      SONG_SCORE_DOWNLOAD( ch_study_analysis )
       ch_versions = ch_versions.mix(SONG_SCORE_DOWNLOAD.out.versions)
 
       PREP_SAMPLE ( SONG_SCORE_DOWNLOAD.out.analysis_files )
@@ -36,7 +42,7 @@ workflow STAGE_INPUT {
 
       analysis_input = PREP_SAMPLE.out.sample_sheet_csv
       } else {
-        exit 1, "Using using API_Token, both a study_id and analysis_id must be specified."
+        exit 1, "Using using API_Token, both a study_id and analysis_ids must be specified."
       }
     } else {
       //If no API_Token, check for local samplesheet
@@ -55,7 +61,7 @@ workflow STAGE_INPUT {
     .collectFile(keepHeader: true, name: 'sample_sheet.csv')
     .splitCsv(header:true)
     .map{ row ->
-       if (row.analysis_type == "sequencing_experiment" && row.single_end == 'False') {
+       if (row.analysis_type == "sequencing_experiment" && row.single_end.toLowerCase() == 'false') {
          tuple([
            analysis_type : row.analysis_type,
            id:"${row.sample}-${row.lane}".toString(), 
@@ -68,12 +74,12 @@ workflow STAGE_INPUT {
            data_type:'fastq', 
            numLanes:row.read_group_count,
            experiment:row.experiment,
-           single_end : row.single_end
+           single_end : row.single_end.toBoolean()
            ], 
            [file(row.fastq_1), file(row.fastq_2)],
            row.analysis_json
            )
-       } else if (row.analysis_type == "sequencing_experiment" && row.single_end == 'True') {
+       } else if (row.analysis_type == "sequencing_experiment" && row.single_end.toLowerCase() == 'true') {
          tuple([
            analysis_type : row.analysis_type,
            id:"${row.sample}-${row.lane}".toString(), 
@@ -86,7 +92,7 @@ workflow STAGE_INPUT {
            data_type:'fastq', 
            numLanes:row.read_group_count,
            experiment:row.experiment,
-           single_end : row.single_end
+           single_end : row.single_end.toBoolean()
            ], 
            [file(row.fastq_1)],
            row.analysis_json
@@ -152,6 +158,7 @@ workflow STAGE_INPUT {
         tuple([meta,null])
       }
     }
+    .unique{it[1]}
     .set{ ch_meta_analysis }
 
     //Reorganize files as "sequencing_experiment expected input is tuple while other types are flat"
@@ -168,8 +175,8 @@ workflow STAGE_INPUT {
     }.set{ch_meta_files}
 
     emit:
-    meta_analysis = ch_meta_analysis         // channel: [ val(meta), analysis_json]
-    meta_files  = ch_meta_files.first()      // channel: [ val(meta), [ files ] ]
+    meta_analysis = ch_meta_analysis // channel: [ val(meta), analysis_json]
+    meta_files  = ch_meta_files      // channel: [ val(meta), [ files ] ]
     upRdpc = upRdpc_flag
     
     versions = ch_versions                   // channel: [ versions.yml ]

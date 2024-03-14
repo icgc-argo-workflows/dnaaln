@@ -72,7 +72,6 @@ include { CLEANUP as CLEAN_QC_M                                    } from '../mo
 */
 
 workflow DNASEQ_ALN_WORKFLOW {
-
     ch_versions = Channel.empty()
 
     //Enforce profile so that command is run with at minimum "--profile docker"
@@ -102,7 +101,8 @@ workflow DNASEQ_ALN_WORKFLOW {
     //By default will look for analysis_id+study_id else samplesheet
     //If upload will not occur if local_mode is true or no API_token is detected
     STAGE_INPUT(
-        [params.study_id,params.analysis_id],
+        params.study_id,
+        params.analysis_id,
         params.samplesheet
         )
 
@@ -276,9 +276,10 @@ workflow DNASEQ_ALN_WORKFLOW {
         }
         if (params.tools.split(',').contains('bwamem2_aln')){
             //Combine info to generate payload and determine upload status
-            MERG_SORT_DUP_M2.out.metrics.combine(
-                analysis_meta.first()
-            ).combine(
+            MERG_SORT_DUP_M2.out.metrics
+            .combine(STAGE_INPUT.out.upRdpc)
+            .combine(STAGE_INPUT.out.meta_analysis)
+            .combine(
                 reference_files_M2.map{ meta,files -> [files.findAll{ it.name.endsWith(".fasta") || it.name.endsWith(".fa") }]}.flatten().collect()
             ).map{
                 meta,file,upRdpc,metaB,analysis,ref ->
@@ -325,15 +326,15 @@ workflow DNASEQ_ALN_WORKFLOW {
             if (params.tools.split(',').contains('bwamem_aln') && params.tools.split(',').contains('bwamem2_aln')){
                 ch_cleanup_M=Channel.empty()
                     .mix(STAGE_INPUT.out.meta_analysis.map{meta,metadata -> metadata}.collect())
-                    .mix(STAGE_INPUT.out.meta_files.map{meta,files -> metadata}.flatten().collect())
+                    .mix(STAGE_INPUT.out.meta_files.map{meta,files -> files}.flatten().collect())
             } else if (params.tools.split(',').contains('bwamem_aln')) {
                 ch_cleanup_M=Channel.empty()
                     .mix(STAGE_INPUT.out.meta_analysis.map{meta,metadata -> metadata}.collect())
-                    .mix(STAGE_INPUT.out.meta_files.map{meta,files -> metadata}.flatten().collect())
+                    .mix(STAGE_INPUT.out.meta_files.map{meta,files -> files}.flatten().collect())
             } else if (params.tools.split(',').contains('bwamem2_aln')) {
                  ch_cleanup_M2=Channel.empty()
                     .mix(STAGE_INPUT.out.meta_analysis.map{meta,metadata -> metadata}.collect())
-                    .mix(STAGE_INPUT.out.meta_files.map{meta,files -> metadata}.flatten().collect())
+                    .mix(STAGE_INPUT.out.meta_files.map{meta,files -> files}.flatten().collect())
             }
         }
         if ( params.tools.split(',').contains('bwamem2_aln')){
@@ -371,22 +372,26 @@ workflow DNASEQ_ALN_WORKFLOW {
                 //ch_cleanup_M.subscribe{println "delete: ${it}"}
                 CLEAN_ALN_M(
                     ch_cleanup_M.unique().collect(),
-                    UPLOAD_ALIGNMENT_M.out.analysis_id
+                    MERG_SORT_DUP_M.out.cram_alignment_index
                 )
             } else {
+                ch_cleanup_M=ch_cleanup_M
+                .mix(PAYLOAD_ALIGNMENT_M.out.payload_files.map{meta,analysis,files -> files}.collect())
+                .mix(MERG_SORT_DUP_M.out.cram_alignment_index.map{meta,cram,crai -> cram}.collect())
                 //ch_cleanup_M.subscribe{println "delete: ${it}"}
                 CLEAN_ALN_M(
                     ch_cleanup_M.unique().collect(),
-                    MERG_SORT_DUP_M.out.cram_alignment_index
+                    UPLOAD_ALIGNMENT_M.out.analysis_id
                 )
             }
         }
-        if (params.tools.split(',').contains('markdup') && !params.local_mode){
+        if (params.tools.split(',').contains('markdup')){
                 if ( params.tools.split(',').contains('bwamem2_aln')){
                     CLEAN_QC_M2(
                         Channel.empty()
-                        .mix(PAYLOAD_METRICS_M2.out.payload_files.map{meta,analysis,files -> files}.collect())
+                        .mix(PAYLOAD_METRICS_M2.out.payload_files.map{ meta,analysis,files -> files.moveTo("${files.getParent()}/old_${files.getName()}")}.collect())
                         .mix(MERG_SORT_DUP_M2.out.metrics.map{meta,files -> files}.collect())
+                        .unique()
                         .collect(),
                         Channel.empty()
                         .mix(UPLOAD_QC_M2.out.analysis_id)
@@ -396,8 +401,9 @@ workflow DNASEQ_ALN_WORKFLOW {
                 if ( params.tools.split(',').contains('bwamem_aln')){
                     CLEAN_QC_M(
                         Channel.empty()
-                        .mix(PAYLOAD_METRICS_M.out.payload_files.map{meta,analysis,files -> files}.collect())
+                        .mix(PAYLOAD_METRICS_M.out.payload_files.map{ meta,analysis,files -> files.moveTo("${files.getParent()}/old_${files.getName()}")}.collect())
                         .mix(MERG_SORT_DUP_M.out.metrics.map{meta,files -> files}.collect())
+                        .unique()
                         .collect(),
                         Channel.empty()
                         .mix(UPLOAD_QC_M.out.analysis_id)

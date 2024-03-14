@@ -60,7 +60,8 @@ workflow DNASEQ_ALN_BWAMEM {
             data_type:"${meta.data_type}",
             size:"${meta.size}",
             numLanes:"${meta.numLanes}",
-            experiment:"${meta.experiment}"
+            experiment:"${meta.experiment}",
+            tool : "bwamem"
             ],bam
         ]
     }.set{ch_csort}

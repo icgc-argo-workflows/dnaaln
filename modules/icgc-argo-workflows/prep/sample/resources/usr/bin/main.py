@@ -334,18 +334,18 @@ def main():
     
     elif analysis_type == 'sequencing_alignment':
       for fp in args.input_files:
-        if fp.endswith('cram'): 
-          cram = os.path.join(os.getcwd(), args.outdir, os.path.basename(fp))
-          os.symlink(os.path.abspath(fp), cram)
-        elif fp.endswith('crai'):
-          crai = os.path.join(os.getcwd(), args.outdir, os.path.basename(fp))
-          os.symlink(os.path.abspath(fp), crai)
+        if fp.endswith('cram') or fp.endswith('bam'): 
+          bam_cram = os.path.join(os.getcwd(), args.outdir, os.path.basename(fp))
+          os.symlink(os.path.abspath(fp), bam_cram)
+        elif fp.endswith('crai') or fp.endswith('bai'):
+          bai_crai = os.path.join(os.getcwd(), args.outdir, os.path.basename(fp))
+          os.symlink(os.path.abspath(fp), bai_crai)
         else:
           sys.exit("Error: not supported input file format")
       with open(output_sample_sheet, 'w', newline='') as f:
         csvwriter = csv.writer(f, delimiter=',')
-        csvwriter.writerow(['analysis_type','study_id','patient','sex','status','sample','cram','crai',"genome_build",'experiment', 'analysis_json'])
-        csvwriter.writerow([analysis_type, study_id, donor_id, sex, status, sample_id, cram, crai, genome_build,experiment, metadata_json])
+        csvwriter.writerow(['analysis_type','study_id','patient','sex','status','sample','bam_cram','bai_crai',"genome_build",'experiment', 'analysis_json'])
+        csvwriter.writerow([analysis_type, study_id, donor_id, sex, status, sample_id, bam_cram, bai_crai, genome_build,experiment, metadata_json])
 
     elif analysis_type == 'variant_calling':
       for fp in song_analysis['files']:

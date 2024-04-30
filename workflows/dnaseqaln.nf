@@ -44,8 +44,8 @@ include { DNASEQ_INDEX                                             } from '../su
 include { DNASEQ_ALN_BWAMEM2 as BWAMEM2                            } from '../subworkflows/local/dnaseq_aln_bwamem2/main'
 include { DNASEQ_ALN_BWAMEM as BWAMEM                              } from '../subworkflows/local/dnaseq_aln_bwamem/main'
 //Make a copy of each process for each BWA-mem and BWA-mem2
-include { DNASEQ_ALN_MERG_SORT_DUP as MERG_SORT_DUP_M2             } from '../subworkflows/local/dnaseq_aln_merg_sort_dup/main'
-include { DNASEQ_ALN_MERG_SORT_DUP as MERG_SORT_DUP_M              } from '../subworkflows/local/dnaseq_aln_merg_sort_dup/main'
+include { MERG_SORT_DUP as MERG_SORT_DUP_M2             } from '../subworkflows/icgc-argo-workflows/merg_sort_dup/main'
+include { MERG_SORT_DUP as MERG_SORT_DUP_M              } from '../subworkflows/icgc-argo-workflows/merg_sort_dup/main'
 include { SONG_SCORE_UPLOAD as UPLOAD_ALIGNMENT_M2                 } from '../subworkflows/icgc-argo-workflows/song_score_upload/main'
 include { SONG_SCORE_UPLOAD as UPLOAD_ALIGNMENT_M                  } from '../subworkflows/icgc-argo-workflows/song_score_upload/main'
 include { SONG_SCORE_UPLOAD as UPLOAD_QC_M2                        } from '../subworkflows/icgc-argo-workflows/song_score_upload/main'
@@ -106,7 +106,6 @@ workflow DNASEQ_ALN_WORKFLOW {
         params.samplesheet
         )
 
-
     //Perform BWAMEM2 alignment,make payload and upload
     if (params.tools.split(',').contains('bwamem2_aln')){
         //Perform Alignment per Read group
@@ -119,7 +118,7 @@ workflow DNASEQ_ALN_WORKFLOW {
         //Merge read groups into one file follow by sort,indexing,optinal markDup and CRAM conversion
         MERG_SORT_DUP_M2( //[val(meta), path(file1)],[val(meta),[path(fileA),path(fileB)]]
             BWAMEM2.out.bam,
-            reference_files_M2
+            reference_files_M.map{meta,files -> meta}.combine(reference_files_M.map{meta,files -> files}.flatten())
             )
         ch_versions = ch_versions.mix(MERG_SORT_DUP_M2.out.versions)
 
@@ -178,9 +177,9 @@ workflow DNASEQ_ALN_WORKFLOW {
         ch_versions = ch_versions.mix(BWAMEM.out.versions)
 
         //Merge read groups into one file follow by sort,indexing,optinal markDup and CRAM conversion
-        MERG_SORT_DUP_M( //[val(meta), path(file1)],[val(meta),[path(fileA),path(fileB)]]
+        MERG_SORT_DUP_M( //[val(meta), path(file1)],[[val(meta),[path(fileA)],[val(meta),[path(fileB)],]
             BWAMEM.out.bam,
-            reference_files_M
+            reference_files_M.map{meta,files -> meta}.combine(reference_files_M.map{meta,files -> files}.flatten())
             )
         ch_versions = ch_versions.mix(MERG_SORT_DUP_M.out.versions)
 

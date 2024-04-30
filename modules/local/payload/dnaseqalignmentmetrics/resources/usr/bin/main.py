@@ -343,6 +343,7 @@ def main(args):
         if re.match(r'.+\.duplicates_metrics\.tgz$', f):
             new_name = '%s.duplicates_metrics.tgz' % aligned_seq_basename
             dst = os.path.join("out", new_name)
+            print("A",dst)
             os.symlink(os.path.abspath(f), dst)
             f = new_name
         # renmame ubam_qc_metrics file to have the same base name as the aligned seq
@@ -350,6 +351,7 @@ def main(args):
             rg_id = get_rg_id_from_ubam_qc(f, seq_experiment_analysis_dict)
             new_name = '%s.%s.ubam_qc_metrics.tgz' % (re.sub(r'\.aln\.(cram|bam)$', '', aligned_seq_basename), rg_id)
             dst = os.path.join("out", new_name)
+            print("B",dst)
             os.symlink(os.path.abspath(f), dst)
             f = new_name
         else:

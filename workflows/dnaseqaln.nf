@@ -221,6 +221,7 @@ workflow DNASEQ_ALN_WORKFLOW {
             .mix(MERG_SORT_DUP_M.out.versions)
             .collectFile(name: 'collated_versions.yml')
         )
+
         ch_versions = ch_versions.mix(PAYLOAD_ALIGNMENT_M.out.versions)
 
         UPLOAD_ALIGNMENT_M(PAYLOAD_ALIGNMENT_M.out.payload_files) // [val(meta), path("*.payload.json"), [path(CRAM),path(CRAI)]
@@ -366,7 +367,7 @@ workflow DNASEQ_ALN_WORKFLOW {
 
             if (params.local_mode){
                 ch_cleanup_M=ch_cleanup_M
-                .mix(PAYLOAD_ALIGNMENT_M.out.payload_files.map{meta,analysis,files -> files}.collect())
+                .mix(PAYLOAD_ALIGNMENT_M.out.payload_files.map{meta,analysis,files -> analysis}.collect())
 
                 //ch_cleanup_M.subscribe{println "delete: ${it}"}
                 CLEAN_ALN_M(
@@ -375,7 +376,7 @@ workflow DNASEQ_ALN_WORKFLOW {
                 )
             } else {
                 ch_cleanup_M=ch_cleanup_M
-                .mix(PAYLOAD_ALIGNMENT_M.out.payload_files.map{meta,analysis,files -> files}.collect())
+                .mix(PAYLOAD_ALIGNMENT_M.out.payload_files.map{meta,analysis,files -> analysis}.collect())
                 .mix(MERG_SORT_DUP_M.out.cram_alignment_index.map{meta,cram,crai -> cram}.collect())
                 //ch_cleanup_M.subscribe{println "delete: ${it}"}
                 CLEAN_ALN_M(
@@ -388,19 +389,17 @@ workflow DNASEQ_ALN_WORKFLOW {
                 if ( params.tools.split(',').contains('bwamem2_aln')){
                     CLEAN_QC_M2(
                         Channel.empty()
-                        .mix(PAYLOAD_METRICS_M2.out.payload_files.map{ meta,analysis,files -> files.moveTo("${files.getParent()}/old_${files.getName()}")}.collect())
+                        .mix(PAYLOAD_METRICS_M2.out.payload_files.map{ meta,analysis,files -> analysis}.collect())
                         .mix(MERG_SORT_DUP_M2.out.metrics.map{meta,files -> files}.collect())
                         .unique()
                         .collect(),
-                        Channel.empty()
-                        .mix(UPLOAD_QC_M2.out.analysis_id)
-                        .collect()
+                        UPLOAD_QC_M2.out.analysis_id
                         )
                 }
                 if ( params.tools.split(',').contains('bwamem_aln')){
                     CLEAN_QC_M(
                         Channel.empty()
-                        .mix(PAYLOAD_METRICS_M.out.payload_files.map{ meta,analysis,files -> files.moveTo("${files.getParent()}/old_${files.getName()}")}.collect())
+                        .mix(PAYLOAD_METRICS_M.out.payload_files.map{ meta,analysis,files -> analysis}.collect())
                         .mix(MERG_SORT_DUP_M.out.metrics.map{meta,files -> files}.collect())
                         .unique()
                         .collect(),

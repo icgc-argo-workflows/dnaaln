@@ -75,9 +75,9 @@ workflow DNASEQ_ALN_WORKFLOW {
     ch_versions = Channel.empty()
 
     //Enforce profile so that command is run with at minimum "--profile docker"
-    if (!"${workflow.profile}".contains('docker') && !"${workflow.profile}".contains('singularity')){
-        exit 1, "Error Missing profile. `-profile` must be specified with the engines `docker` or `singularity`."
-    }
+    //if (!"${workflow.profile}".contains('docker') && !"${workflow.profile}".contains('singularity')){
+    //    exit 1, "Error Missing profile. `-profile` must be specified with the engines `docker` or `singularity`."
+    //}
     if (params.api_token || params.api_download_token || params.api_upload_token){
       if (!"${workflow.profile}".contains('rpdc_qa') && !"${workflow.profile}".contains('rdpc_dev') && !"${workflow.profile}".contains('rdpc')){
         exit 1, "Error Missing profile. `-profile` must be specified with the engines `rpdc_qa`,`rdpc_dev`, or `rdpc`."

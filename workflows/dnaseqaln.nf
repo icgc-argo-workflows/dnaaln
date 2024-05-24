@@ -78,11 +78,11 @@ workflow DNASEQ_ALN_WORKFLOW {
     //if (!"${workflow.profile}".contains('docker') && !"${workflow.profile}".contains('singularity')){
     //    exit 1, "Error Missing profile. `-profile` must be specified with the engines `docker` or `singularity`."
     //}
-    if (params.api_token || params.api_download_token || params.api_upload_token){
-      if (!"${workflow.profile}".contains('rpdc_qa') && !"${workflow.profile}".contains('rdpc_dev') && !"${workflow.profile}".contains('rdpc')){
-        exit 1, "Error Missing profile. `-profile` must be specified with the engines `rpdc_qa`,`rdpc_dev`, or `rdpc`."
-      }
-    }
+    // if (params.api_token || params.api_download_token || params.api_upload_token){
+    //   if (!"${workflow.profile}".contains('rpdc_qa') && !"${workflow.profile}".contains('rdpc_dev') && !"${workflow.profile}".contains('rdpc')){
+    //     exit 1, "Error Missing profile. `-profile` must be specified with the engines `rpdc_qa`,`rdpc_dev`, or `rdpc`."
+    //   }
+    // }
     if (params.tools.split(',').contains('bwamem2_aln')==false && params.tools.split(',').contains('bwamem_aln')==false) {
         exit 1, "Error Missing Params. `--tools bwamem2_aln`,`--tools bwamem_aln`, or `--tools bwamem_aln,bwamem2_aln` must be specified."
     }

@@ -1,54 +1,94 @@
 {
-  "name": "nfcore/dnaseqaln",
-  "homePage": "https://github.com/nfcore/dnaseqaln",
+  "name": "nf-core/test",
+  "homePage": "https://github.com/nf-core/test",
   "repos": {
     "https://github.com/icgc-argo-workflows/argo-modules.git": {
       "modules": {
         "icgc-argo-workflows": {
+          "biobambam/bammarkduplicates2": {
+            "branch": "main",
+            "git_sha": "8909b3114d2360514c3b3514f5c5f66f7b506f8e",
+            "installed_by": ["merg_sort_dup"]
+          },
+          "checkinput": {
+            "branch": "main",
+            "git_sha": "e1f2b946b457eac191c0fa97ae1d159a15874c6b",
+            "installed_by": ["stage_input"]
+          },
           "cleanup": {
             "branch": "main",
-            "git_sha": "517b0a82ed697564891e18ff5dba35a70f9da225",
+            "git_sha": "8d014598ef81d65bece3684bd67aef7afae2cda9",
             "installed_by": ["modules"]
           },
           "prep/sample": {
             "branch": "main",
-            "git_sha": "06a2ac189b58d53ee8120ffc12aff485849c9a7e",
+            "git_sha": "dbd4c7b18c86be15f2ca341085d90c0488545d53",
             "installed_by": ["stage_input"]
+          },
+          "samtools/convert": {
+            "branch": "main",
+            "git_sha": "8909b3114d2360514c3b3514f5c5f66f7b506f8e",
+            "installed_by": ["merg_sort_dup"]
+          },
+          "samtools/index": {
+            "branch": "main",
+            "git_sha": "e1f2b946b457eac191c0fa97ae1d159a15874c6b",
+            "installed_by": ["merg_sort_dup", "stage_input"]
+          },
+          "samtools/merge": {
+            "branch": "main",
+            "git_sha": "8909b3114d2360514c3b3514f5c5f66f7b506f8e",
+            "installed_by": ["merg_sort_dup"]
           },
           "score/download": {
             "branch": "main",
-            "git_sha": "f5e2d027a4f886a8702f5c4be825801513b578d0",
-            "installed_by": ["modules", "song_score_download"]
+            "git_sha": "19ee48fdf1672ef9723e3093531be7ddea3e27ec",
+            "installed_by": ["song_score_download"]
           },
           "score/upload": {
             "branch": "main",
-            "git_sha": "f5e2d027a4f886a8702f5c4be825801513b578d0",
-            "installed_by": ["modules", "song_score_upload"]
+            "git_sha": "19ee48fdf1672ef9723e3093531be7ddea3e27ec",
+            "installed_by": ["song_score_upload"]
           },
           "song/get": {
             "branch": "main",
-            "git_sha": "f5e2d027a4f886a8702f5c4be825801513b578d0",
-            "installed_by": ["modules", "song_score_download"]
+            "git_sha": "19ee48fdf1672ef9723e3093531be7ddea3e27ec",
+            "installed_by": ["song_score_download"]
           },
           "song/manifest": {
             "branch": "main",
-            "git_sha": "f5e2d027a4f886a8702f5c4be825801513b578d0",
-            "installed_by": ["modules", "song_score_upload"]
+            "git_sha": "19ee48fdf1672ef9723e3093531be7ddea3e27ec",
+            "installed_by": ["song_score_upload"]
           },
           "song/publish": {
             "branch": "main",
-            "git_sha": "f5e2d027a4f886a8702f5c4be825801513b578d0",
-            "installed_by": ["modules", "song_score_upload"]
+            "git_sha": "19ee48fdf1672ef9723e3093531be7ddea3e27ec",
+            "installed_by": ["song_score_upload"]
           },
           "song/submit": {
             "branch": "main",
-            "git_sha": "f5e2d027a4f886a8702f5c4be825801513b578d0",
-            "installed_by": ["modules", "song_score_upload"]
+            "git_sha": "19ee48fdf1672ef9723e3093531be7ddea3e27ec",
+            "installed_by": ["song_score_upload"]
+          },
+          "tabix/tabix": {
+            "branch": "main",
+            "git_sha": "e1f2b946b457eac191c0fa97ae1d159a15874c6b",
+            "installed_by": ["stage_input"]
+          },
+          "tar": {
+            "branch": "main",
+            "git_sha": "8909b3114d2360514c3b3514f5c5f66f7b506f8e",
+            "installed_by": ["merg_sort_dup"]
           }
         }
       },
       "subworkflows": {
         "icgc-argo-workflows": {
+          "merg_sort_dup": {
+            "branch": "main",
+            "git_sha": "8909b3114d2360514c3b3514f5c5f66f7b506f8e",
+            "installed_by": ["subworkflows"]
+          },
           "song_score_download": {
             "branch": "main",
             "git_sha": "92aa620385099e94401c22b8633cc55ed34ca10e",
@@ -61,7 +101,7 @@
           },
           "stage_input": {
             "branch": "main",
-            "git_sha": "fd02dbcc7dc4e922dc60004b297ac11833154c2e",
+            "git_sha": "e9dfe346ae3334973f406be3051a1091cad1dca6",
             "installed_by": ["subworkflows"]
           }
         }
@@ -70,59 +110,39 @@
     "https://github.com/nf-core/modules.git": {
       "modules": {
         "nf-core": {
-          "biobambam/bammarkduplicates2": {
-            "branch": "master",
-            "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-            "installed_by": ["modules"]
-          },
           "bwa/index": {
             "branch": "master",
-            "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
+            "git_sha": "086fa66260595e123b0ea47a6512539b72a9afa3",
             "installed_by": ["modules"]
           },
           "bwa/mem": {
             "branch": "master",
-            "git_sha": "3dc300ddcaa563c1e3503477557c0e0def6df2ce",
+            "git_sha": "0c34b8159f62cde451c4ff249629c9d0a4f3f9c3",
             "installed_by": ["modules"]
           },
           "bwamem2/index": {
             "branch": "master",
-            "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
+            "git_sha": "7081e04c18de9480948d34513a1c1e2d0fa9126d",
             "installed_by": ["modules"]
           },
           "bwamem2/mem": {
             "branch": "master",
-            "git_sha": "0460d316170f75f323111b4a2c0a2989f0c32013",
+            "git_sha": "3afb95b2e15fc4a2347470255a7ef654f650c8ec",
             "installed_by": ["modules"]
           },
           "gatk4/createsequencedictionary": {
             "branch": "master",
-            "git_sha": "541811d779026c5d395925895fa5ed35e7216cc0",
-            "installed_by": ["modules"]
-          },
-          "samtools/convert": {
-            "branch": "master",
-            "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
+            "git_sha": "e6fe277739f5894711405af3e717b2470bd956b5",
             "installed_by": ["modules"]
           },
           "samtools/faidx": {
             "branch": "master",
-            "git_sha": "fd742419940e01ba1c5ecb172c3e32ec840662fe",
-            "installed_by": ["modules"]
-          },
-          "samtools/index": {
-            "branch": "master",
-            "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
-            "installed_by": ["modules"]
-          },
-          "samtools/merge": {
-            "branch": "master",
-            "git_sha": "0460d316170f75f323111b4a2c0a2989f0c32013",
+            "git_sha": "f153f1f10e1083c49935565844cccb7453021682",
             "installed_by": ["modules"]
           },
           "samtools/sort": {
             "branch": "master",
-            "git_sha": "a0f7be95788366c1923171e358da7d049eb440f9",
+            "git_sha": "4352dbdb09ec40db71e9b172b97a01dcf5622c26",
             "installed_by": ["modules"]
           }
         }

@@ -2,10 +2,11 @@
 process CLEANUP {
     label 'process_low'
  
-    conda "bioconda::multiqc=1.13"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/multiqc:1.13--pyhdfd78af_0' :
-        'quay.io/biocontainers/multiqc:1.13--pyhdfd78af_0' }"
+    conda "conda-forge::coreutils=9.1"
+    container "${ workflow.containerEngine == 'singularity' ? 'https://depot.galaxyproject.org/singularity/ubuntu:20.04' : 'docker.io/ubuntu:20.04'}"
+    //container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+    //    'https://depot.galaxyproject.org/singularity/ubuntu:20.04' :
+    //    'ubuntu:20.04' }"
 
     input:
     path files_to_delete  // more accurately, other non-hidden files in the same folder will be deleted as well

@@ -17,6 +17,16 @@ workflow DNASEQ_ALN_BWAMEM {
     main:
 
     ch_versions = Channel.empty()
+    //Categorize reference_files ([meta, .fasta|.fa] [meta, fai]) into two separate channels based on file extension (reg_org.fasta, reg_org.fai)
+    reference_files.map{ meta,files -> 
+        def matchedFiles = files.findAll { fileName -> fileName =~ /(\.fasta|1\.fa)$/ }
+        [meta,matchedFiles]
+    }.set{ref_fasta}
+
+    reference_files.map{ meta,files -> 
+        def matchedFiles = files.findAll { fileName -> !(fileName =~ /(\.fasta|1\.fa)$/) }
+        [meta,matchedFiles]
+    }.set{ref_supplement}
 
     //Collect Readgroups and add Date and perform Alignment
     sample_files.map{
@@ -33,15 +43,15 @@ workflow DNASEQ_ALN_BWAMEM {
                 data_type:"${meta.data_type}",
                 size:"${meta.size}",
                 numLanes:"${meta.numLanes}",
-                experiment:"${meta.experiment}",
-                date :"${new Date().format("yyyyMMdd")}"
+                experiment:"${meta.experiment}"
             ],files
         ]
     }.set{ch_mem}
 
     BWA_MEM(
          ch_mem,
-         reference_files,
+         ref_supplement,
+         ref_fasta,
          false
     )
     ch_versions = ch_versions.mix(BWA_MEM.out.versions)
@@ -62,19 +72,18 @@ workflow DNASEQ_ALN_BWAMEM {
             size:"${meta.size}",
             numLanes:"${meta.numLanes}",
             experiment:"${meta.experiment}",
-            date:"${meta.date}"
+            tool : "bwamem"
             ],bam
         ]
     }.set{ch_csort}
 
-    SAMTOOLS_CSORT(ch_csort)
+    SAMTOOLS_CSORT(ch_csort,ref_fasta)
     ch_versions = ch_versions.mix(SAMTOOLS_CSORT.out.versions)
     ch_versions= ch_versions.map{ file -> file.moveTo("${file.getParent()}/.${file.getName()}")}
 
     //Prep files for cleanup
     Channel.empty()
     .mix(BWA_MEM.out.bam.map{meta,file -> file}.collect())
-    .mix(ch_mem.map{meta,files -> files}.collect())
     .collect()
     .set{ch_cleanup}
     

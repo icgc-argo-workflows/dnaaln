@@ -293,6 +293,7 @@ def main(args):
     with open(args.seq_experiment_analysis, 'r') as f:
         seq_experiment_analysis_dict = json.load(f)
 
+
     payload = {
         'analysisType': {
             'name': 'qc_metrics'
@@ -336,13 +337,15 @@ def main(args):
     insert_filename_friendly_rg_id(seq_experiment_analysis_dict)
 
     aligned_seq_basename = get_aligned_seq_basename(args.files_to_upload)
-
+    date_str = date.today().strftime("%Y%m%d")
     # get file of the payload
     for f in sorted(args.files_to_upload):
         # renmame duplicates_metrics file to have the same base name as the aligned seq
+        #MUTO-INTL.DO252981.SA615305.WGS.aln.cram.duplicates_metrics.tgz
         if re.match(r'.+\.duplicates_metrics\.tgz$', f):
-            new_name = '%s.duplicates_metrics.tgz' % aligned_seq_basename
+            new_name="%s.%s.%s" % (re.sub(r'\.aln\.(cram|bam).*$', '', aligned_seq_basename),date_str,re.search(r'aln\.(cram|bam).duplicates_metrics.tgz$',aligned_seq_basename).group(0))
             dst = os.path.join("out", new_name)
+            print("A",dst)
             os.symlink(os.path.abspath(f), dst)
             f = new_name
         # renmame ubam_qc_metrics file to have the same base name as the aligned seq
@@ -350,6 +353,7 @@ def main(args):
             rg_id = get_rg_id_from_ubam_qc(f, seq_experiment_analysis_dict)
             new_name = '%s.%s.ubam_qc_metrics.tgz' % (re.sub(r'\.aln\.(cram|bam)$', '', aligned_seq_basename), rg_id)
             dst = os.path.join("out", new_name)
+            print("B",dst)
             os.symlink(os.path.abspath(f), dst)
             f = new_name
         else:

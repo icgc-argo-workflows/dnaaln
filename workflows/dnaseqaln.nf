@@ -48,12 +48,8 @@ include { MERG_SORT_DUP as MERG_SORT_DUP_M2             } from '../subworkflows/
 include { MERG_SORT_DUP as MERG_SORT_DUP_M              } from '../subworkflows/icgc-argo-workflows/merg_sort_dup/main'
 include { SONG_SCORE_UPLOAD as UPLOAD_ALIGNMENT_M2                 } from '../subworkflows/icgc-argo-workflows/song_score_upload/main'
 include { SONG_SCORE_UPLOAD as UPLOAD_ALIGNMENT_M                  } from '../subworkflows/icgc-argo-workflows/song_score_upload/main'
-include { SONG_SCORE_UPLOAD as UPLOAD_QC_M2                        } from '../subworkflows/icgc-argo-workflows/song_score_upload/main'
-include { SONG_SCORE_UPLOAD as UPLOAD_QC_M                         } from '../subworkflows/icgc-argo-workflows/song_score_upload/main'
 include { PAYLOAD_ALIGNMENT as PAYLOAD_ALIGNMENT_M2                } from '../modules/local/payload/dnaseqalignment/main'
 include { PAYLOAD_ALIGNMENT as PAYLOAD_ALIGNMENT_M                 } from '../modules/local/payload/dnaseqalignment/main'
-include { PAYLOAD_METRICS as PAYLOAD_METRICS_M2                    } from '../modules/local/payload/dnaseqalignmentmetrics/main'
-include { PAYLOAD_METRICS as PAYLOAD_METRICS_M                     } from '../modules/local/payload/dnaseqalignmentmetrics/main'
 //Clean up for ALN and QC for BWA-mem and BWA-mem2
 include { CLEANUP as CLEAN_ALN_M2                                  } from '../modules/icgc-argo-workflows/cleanup/main'
 include { CLEANUP as CLEAN_QC_M2                                   } from '../modules/icgc-argo-workflows/cleanup/main'
@@ -118,7 +114,7 @@ workflow DNASEQ_ALN_WORKFLOW {
         //Merge read groups into one file follow by sort,indexing,optinal markDup and CRAM conversion
         MERG_SORT_DUP_M2( //[val(meta), path(file1)],[val(meta),[path(fileA),path(fileB)]]
             BWAMEM2.out.bam,
-            reference_files_M.map{meta,files -> meta}.combine(reference_files_M.map{meta,files -> files}.flatten())
+            reference_files_M2.map{meta,files -> meta}.combine(reference_files_M2.map{meta,files -> files}.flatten())
             )
         ch_versions = ch_versions.mix(MERG_SORT_DUP_M2.out.versions)
 
@@ -228,96 +224,6 @@ workflow DNASEQ_ALN_WORKFLOW {
         ch_versions = ch_versions.mix(UPLOAD_ALIGNMENT_M.out.versions)
     }
 
-    //Generate markdup metrics payload and upload
-    if (params.tools.split(',').contains('markdup')){
-        if (params.tools.split(',').contains('bwamem_aln')){
-
-            //Combine info to generate payload and determine upload status
-            MERG_SORT_DUP_M.out.metrics
-            .combine(STAGE_INPUT.out.upRdpc)
-            .combine(STAGE_INPUT.out.meta_analysis)
-            .combine(
-                reference_files_M.map{ meta,files -> [files.findAll{ it.name.endsWith(".fasta") || it.name.endsWith(".fa") }]}.flatten().collect()
-            ).map{
-                meta,file,upRdpc,metaB,analysis,ref ->
-                [
-                    [
-                        id:"${meta.study_id}.${meta.patient}.${meta.sample}.${meta.experiment}",
-                        patient:"${meta.patient}",
-                        sex:"${meta.sex}",
-                        sample:"${meta.sample}",
-                        read_group:"${meta.read_group}",
-                        data_type:"${meta.data_type}",
-                        date : "${meta.date}",
-                        genomeBuild: "${ref.getName()}".replaceAll(/.fasta$/,"").replaceAll(/.fa$/,""),
-                        read_groups_count: "${meta.numLanes}",
-                        study_id : "${meta.study_id}",
-                        date :"${new Date().format("yyyyMMdd")}",
-                        upRdpc : upRdpc
-                    ],[file],analysis
-                ]
-            }.branch{
-                upload : it[0].upRdpc
-            }
-            .set{ch_m_qc_payload}
-
-            //Generate payload
-            PAYLOAD_METRICS_M( // [val (meta), [path(tar.gz)],path(analysis_json)]
-                ch_m_qc_payload.upload,
-                Channel.empty()
-                .mix(MERG_SORT_DUP_M.out.versions)
-                .collectFile(name: 'collated_versions.yml')
-            )
-            ch_versions = ch_versions.mix(PAYLOAD_METRICS_M.out.versions.map{ file -> file.moveTo("${file.getParent()}/.${file.getName()}")})  
-
-            //Upload
-            UPLOAD_QC_M(PAYLOAD_METRICS_M.out.payload_files) // [val(meta), path("*.payload.json"), [path(tar.gz)]
-            ch_versions = ch_versions.mix(UPLOAD_QC_M.out.versions.map{ file -> file.moveTo("${file.getParent()}/.${file.getName()}")})  
-        }
-        if (params.tools.split(',').contains('bwamem2_aln')){
-            //Combine info to generate payload and determine upload status
-            MERG_SORT_DUP_M2.out.metrics
-            .combine(STAGE_INPUT.out.upRdpc)
-            .combine(STAGE_INPUT.out.meta_analysis)
-            .combine(
-                reference_files_M2.map{ meta,files -> [files.findAll{ it.name.endsWith(".fasta") || it.name.endsWith(".fa") }]}.flatten().collect()
-            ).map{
-                meta,file,upRdpc,metaB,analysis,ref ->
-                [
-                    [
-                        id:"${meta.study_id}.${meta.patient}.${meta.sample}.${meta.experiment}",
-                        patient:"${meta.patient}",
-                        sex:"${meta.sex}",
-                        sample:"${meta.sample}",
-                        read_group:"${meta.read_group}",
-                        data_type:"${meta.data_type}",
-                        date : "${meta.date}",
-                        genomeBuild: "${ref.getName()}".replaceAll(/.fasta$/,"").replaceAll(/.fa$/,""),
-                        read_groups_count: "${meta.numLanes}",
-                        study_id : "${meta.study_id}",
-                        date :"${new Date().format("yyyyMMdd")}",
-                        upRdpc : upRdpc
-                    ],[file],analysis
-                ]
-            }.branch{
-                upload : it[0].upRdpc
-            }
-            .set{ch_m2_qc_payload}
-
-            //Generate payload
-            PAYLOAD_METRICS_M2( // [val (meta), [path(tar.gz)],path(analysis_json)]
-                ch_m2_qc_payload.upload,
-                Channel.empty()
-                .mix(MERG_SORT_DUP_M2.out.versions)
-                .collectFile(name: 'collated_versions.yml')
-            )
-            ch_versions = ch_versions.mix(PAYLOAD_METRICS_M2.out.versions.map{ file -> file.moveTo("${file.getParent()}/.${file.getName()}")})            
-
-            //Upload
-            UPLOAD_QC_M2(PAYLOAD_METRICS_M2.out.payload_files) // [val(meta), path("*.payload.json"), [path(tar.gz)]
-            ch_versions = ch_versions.mix(UPLOAD_QC_M2.out.versions.map{ file -> file.moveTo("${file.getParent()}/.${file.getName()}")})
-        }
-    }
     if (params.tools.split(',').contains('cleanup')){
         if (params.samplesheet){
             ch_cleanup_M = Channel.empty()
@@ -341,22 +247,20 @@ workflow DNASEQ_ALN_WORKFLOW {
             ch_cleanup_M2=ch_cleanup_M2
             .mix(BWAMEM2.out.tmp_files.collect())
             .mix(MERG_SORT_DUP_M2.out.tmp_files.collect())
-
-            if (params.local_mode){
-                //ch_cleanup_M2.subscribe{println "delete: ${it}"}
-                CLEAN_ALN_M2(
-                    ch_cleanup_M2.unique().collect(),
-                    MERG_SORT_DUP_M2.out.cram_alignment_index
-                )
-            } else {
+        
+            if (params.api_token){
                 ch_cleanup_M2=ch_cleanup_M2
                 .mix(PAYLOAD_ALIGNMENT_M2.out.payload_files.map{meta,analysis,files -> files}.collect())
                 .mix(MERG_SORT_DUP_M2.out.cram_alignment_index.map{meta,cram,crai -> cram}.collect())
 
-                //ch_cleanup_M2.subscribe{println "delete: ${it}"}
                 CLEAN_ALN_M2(
                     ch_cleanup_M2.unique().collect(),
                     UPLOAD_ALIGNMENT_M2.out.analysis_id
+                )
+            } else {
+                CLEAN_ALN_M2(
+                    ch_cleanup_M2.unique().collect(),
+                    MERG_SORT_DUP_M2.out.cram_alignment_index
                 )
             }
         }
@@ -365,49 +269,22 @@ workflow DNASEQ_ALN_WORKFLOW {
             .mix(BWAMEM.out.tmp_files.collect())
             .mix(MERG_SORT_DUP_M.out.tmp_files.collect())
 
-            if (params.local_mode){
-                ch_cleanup_M=ch_cleanup_M
-                .mix(PAYLOAD_ALIGNMENT_M.out.payload_files.map{meta,analysis,files -> analysis}.collect())
-
-                //ch_cleanup_M.subscribe{println "delete: ${it}"}
-                CLEAN_ALN_M(
-                    ch_cleanup_M.unique().collect(),
-                    MERG_SORT_DUP_M.out.cram_alignment_index
-                )
-            } else {
+            if (params.api_token){
                 ch_cleanup_M=ch_cleanup_M
                 .mix(PAYLOAD_ALIGNMENT_M.out.payload_files.map{meta,analysis,files -> analysis}.collect())
                 .mix(MERG_SORT_DUP_M.out.cram_alignment_index.map{meta,cram,crai -> cram}.collect())
-                //ch_cleanup_M.subscribe{println "delete: ${it}"}
+
                 CLEAN_ALN_M(
                     ch_cleanup_M.unique().collect(),
-                    UPLOAD_ALIGNMENT_M.out.analysis_id
+                   UPLOAD_ALIGNMENT_M.out.analysis_id
+                )
+            } else {
+
+                CLEAN_ALN_M(
+                   ch_cleanup_M.unique().collect(),
+                   MERG_SORT_DUP_M.out.cram_alignment_index
                 )
             }
-        }
-        if (params.tools.split(',').contains('markdup')){
-                if ( params.tools.split(',').contains('bwamem2_aln')){
-                    CLEAN_QC_M2(
-                        Channel.empty()
-                        .mix(PAYLOAD_METRICS_M2.out.payload_files.map{ meta,analysis,files -> analysis}.collect())
-                        .mix(MERG_SORT_DUP_M2.out.metrics.map{meta,files -> files}.collect())
-                        .unique()
-                        .collect(),
-                        UPLOAD_QC_M2.out.analysis_id
-                        )
-                }
-                if ( params.tools.split(',').contains('bwamem_aln')){
-                    CLEAN_QC_M(
-                        Channel.empty()
-                        .mix(PAYLOAD_METRICS_M.out.payload_files.map{ meta,analysis,files -> analysis}.collect())
-                        .mix(MERG_SORT_DUP_M.out.metrics.map{meta,files -> files}.collect())
-                        .unique()
-                        .collect(),
-                        Channel.empty()
-                        .mix(UPLOAD_QC_M.out.analysis_id)
-                        .collect()
-                        )
-                }
         }
     }
 }

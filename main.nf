@@ -17,7 +17,6 @@ nextflow.enable.dsl = 2
 
 params.study_id                    = WorkflowMain.getGenomeAttribute(params, 'study_id')
 params.analysis_id                 = WorkflowMain.getGenomeAttribute(params, 'analysis_id')
-params.samplesheet                  = WorkflowMain.getGenomeAttribute(params, 'samplesheet') 
 
 params.reference_fasta             = WorkflowMain.getGenomeAttribute(params, 'reference_fasta')
 params.reference_fasta_secondary   = WorkflowMain.getGenomeAttribute(params, 'reference_fasta_secondary')
@@ -33,7 +32,11 @@ params.song_url                    = WorkflowMain.getGenomeAttribute(params, 'so
 params.tools                       = WorkflowMain.getGenomeAttribute(params, 'tools')
 params.outdir                      = WorkflowMain.getGenomeAttribute(params, 'outdir')
 
-params.local_mode                  = WorkflowMain.getGenomeAttribute(params, 'local_mode') 
+params.local                      = WorkflowMain.getGenomeAttribute(params, 'local') 
+params.local_sequencing_json      = WorkflowMain.getGenomeAttribute(params, 'local_sequencing_json')
+params.local_alignment_json       = WorkflowMain.getGenomeAttribute(params, 'local_alignment_json')
+params.local_qc_json              = WorkflowMain.getGenomeAttribute(params, 'local_qc_json')
+params.local_data_directory       = WorkflowMain.getGenomeAttribute(params, 'local_data_directory')
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     VALIDATE & PRINT PARAMETER SUMMARY

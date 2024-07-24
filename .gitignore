@@ -5,9 +5,14 @@ out/*
 
 .nextflow*
 work
-output/*
+
+test/reference/GRCh38_Verily_v1.fasta.pac
+test/reference/GRCh38_Verily_v1.fasta.fai
+test/reference/GRCh38_Verily_v1.fasta.ann
+test/reference/GRCh38_Verily_v1.fasta.amb
 test/reference/GRCh38_Verily_v1.fasta.0123
 test/reference/GRCh38_Verily_v1.fasta.bwt.2bit.64
+test/reference/GRCh38_Verily_v1.dict
 test/old/GRCh38_Verily_v1.fasta.pac
 test/old/GRCh38_Verily_v1.fasta.fai
 test/old/GRCh38_Verily_v1.fasta.bwt.2bit.64
@@ -15,3 +20,5 @@ test/old/GRCh38_Verily_v1.fasta.ann
 test/old/GRCh38_Verily_v1.fasta.amb
 test/old/GRCh38_Verily_v1.fasta.0123
 test/old/GRCh38_Verily_v1.dict
+test/reference/GRCh38_Verily_v1.fasta.sa
+test/reference/GRCh38_Verily_v1.fasta.bwt

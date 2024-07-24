@@ -81,121 +81,11 @@
         "tracedir": {
           "type": "string",
           "description": "Directory to keep pipeline Nextflow logs and reports.",
-          "default": "out/pipeline_info",
+          "default": "${params.outdir}/pipeline_info",
           "fa_icon": "fas fa-cogs",
           "hidden": true
         }
       }
-    },
-    "song_score": {
-      "title": "SONG/SCORE",
-      "type": "object",
-      "description": "Options to interact with SONG/SCORE",
-      "default": "",
-      "properties": {
-        "api_token": {
-          "type": "string",
-          "description": "ICGC-ARGO token from platform"
-        },
-        "api_download_token": {
-          "type": "string",
-          "hidden": true,
-          "description": "ICGC-ARGO token from platform for download"
-        },
-        "song_url": {
-          "type": "string",
-          "description": "SONG URL for download and upload"
-        },
-        "score_url": {
-          "type": "string",
-          "description": "SCORE URL for download and upload"
-        },
-        "song_url_download": {
-          "type": "string",
-          "description": "SONG URL for download",
-          "hidden": true
-        },
-        "score_url_download": {
-          "type": "string",
-          "description": "SCORE URL for download",
-          "hidden": true
-        },
-        "song_url_upload": {
-          "type": "string",
-          "description": "SONG URL for upload",
-          "hidden": true
-        },
-        "score_url_upload": {
-          "type": "string",
-          "description": "SCORE URL for upload",
-          "hidden": true
-        },
-        "song_container": {
-          "type": "string",
-          "description": "Docker url for SONG container"
-        },
-        "song_container_version": {
-          "type": "string",
-          "description": "SONG container version"
-        },
-        "transport_parallel": {
-          "type": "string",
-          "description": "CPU Resource for SONG/SCORE"
-        },
-        "transport_mem": {
-          "type": "string",
-          "description": "Memory Resources for SONG/SCORE"
-        },
-        "score_container": {
-          "type": "string",
-          "description": "Docker url for SCORE container"
-        },
-        "score_container_version": {
-          "type": "string",
-          "description": "SCORE container version"
-        },
-        "api_upload_token": {
-          "type": "string"
-        }
-      }
-    },
-    "pipeline_elements": {
-      "title": "Pipeline elements",
-      "type": "object",
-      "description": "Elements for pipeline",
-      "default": "",
-      "properties": {
-        "study_id": {
-          "type": "string",
-          "description": "ICGC-ARGO program/study ID (required for processing off server)",
-          "default": "TEST-QA"
-        },
-        "analysis_id": {
-          "type": "string",
-          "description": "ICGC-ARGO analysis ID (required for processing off server)"
-        },
-        "tools": {
-          "type": "string",
-          "description": "Subworkflows to run : bwamem_aln,bwamem2_aln,markdup,cleanup,index"
-        },
-        "reference_fasta": {
-          "type": "string",
-          "description": "Genome reference file"
-        },
-        "reference_fasta_secondary": {
-          "type": "string",
-          "description": "Directory containing secondary files to support reference file"
-        },
-        "local_mode": {
-          "type": "string",
-          "description": "If True, no upload will occur"
-        },
-        "samplesheet": {
-          "type": "string",
-          "description": "A csv to identify local files for processing and their metadata"
-        }
-      },
-      "required": ["tools", "reference_fasta"]
     }
   },
   "allOf": [
@@ -207,12 +97,112 @@
     },
     {
       "$ref": "#/definitions/generic_options"
-    },
-    {
-      "$ref": "#/definitions/song_score"
-    },
-    {
-      "$ref": "#/definitions/pipeline_elements"
     }
-  ]
+  ],
+  "properties": {
+    "study_id": {
+      "type": "string",
+      "default": null
+    },
+    "analysis_id": {
+      "type": "string",
+      "default": null
+    },
+    "tools": {
+      "type": "string",
+      "default": null
+    },
+    "local": {
+      "type": "string",
+      "default": null
+    },
+    "local_json": {
+      "type": "string",
+      "default": null
+    },
+    "local_data_directory": {
+      "type": "string",
+      "default": null
+    },
+    "reference_fasta": {
+      "type": "string",
+      "default": null
+    },
+    "reference_fasta_secondary": {
+      "type": "string",
+      "default": null
+    },
+    "api_token": {
+      "type": "string",
+      "default": null
+    },
+    "api_download_token": {
+      "type": "string",
+      "default": null
+    },
+    "api_score_token": {
+      "type": "string",
+      "default": null
+    },
+    "song_url": {
+      "type": "string",
+      "default": null
+    },
+    "score_url": {
+      "type": "string",
+      "default": null
+    },
+    "song_url_download": {
+      "type": "string",
+      "default": null
+    },
+    "score_url_download": {
+      "type": "string",
+      "default": null
+    },
+    "song_url_upload": {
+      "type": "string",
+      "default": null
+    },
+    "score_url_upload": {
+      "type": "string",
+      "default": null
+    },
+    "transport_parallel": {
+      "type": "string",
+      "default": null
+    },
+    "transport_mem": {
+      "type": "string",
+      "default": null
+    },
+    "song_container": {
+      "type": "string",
+      "default": null
+    },
+    "song_container_version": {
+      "type": "string",
+      "default": null
+    },
+    "score_container": {
+      "type": "string",
+      "default": null
+    },
+    "score_container_version": {
+      "type": "string",
+      "default": null
+    },
+    "local_sequencing_json": {
+      "type": "string",
+      "default": null
+    },
+    "local_alignment_json": {
+      "type": "string",
+      "default": null
+    },
+    "local_qc_json": {
+      "type": "string",
+      "default": null
+    }
+  }
 }

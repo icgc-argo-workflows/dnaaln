@@ -38,5 +38,3 @@ output:
       pattern: "versions.yml"
 authors:
   - "@maxulysse"
-maintainers:
-  - "@maxulysse"

@@ -1,6 +1,6 @@
 process PAYLOAD_ALIGNMENT {
     tag "$meta.id"
-    label 'process_single'
+    //label 'process_single'
 
 
     conda "bioconda::multiqc=1.13"

@@ -1,6 +1,6 @@
 process SONG_MANIFEST {
     tag "${analysis_id}"
-    label 'process_single'
+    //label 'process_single'
 
     pod = [secret: workflow.runName + "-secret", mountPath: "/tmp/rdpc_secret"]
     container "${ params.song_container ?: 'ghcr.io/overture-stack/song-client' }:${ params.song_container_version ?: '5.0.2' }"

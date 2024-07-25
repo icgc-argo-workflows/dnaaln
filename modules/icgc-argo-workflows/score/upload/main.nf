@@ -1,7 +1,7 @@
 
 process SCORE_UPLOAD {
     tag "${analysis_id}"
-    label 'process_medium'
+    //label 'process_medium'
 
     pod = [secret: workflow.runName + "-secret", mountPath: "/tmp/rdpc_secret"]
     container "${ params.score_container ?: 'ghcr.io/overture-stack/score' }:${ params.score_container_version ?: '5.8.1' }"

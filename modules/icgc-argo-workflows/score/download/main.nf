@@ -1,6 +1,6 @@
 process SCORE_DOWNLOAD {
     tag "${analysis_id}"
-    label 'process_medium'
+    //label 'process_medium'
 
     pod = [secret: workflow.runName + "-secret", mountPath: "/tmp/rdpc_secret"]
 

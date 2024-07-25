@@ -1,6 +1,6 @@
 
 process CLEANUP {
-    label 'process_low'
+    //label 'process_low'
  
     conda "conda-forge::coreutils=9.1"
     container "${ workflow.containerEngine == 'singularity' ? 'https://depot.galaxyproject.org/singularity/ubuntu:20.04' : 'docker.io/ubuntu:20.04'}"

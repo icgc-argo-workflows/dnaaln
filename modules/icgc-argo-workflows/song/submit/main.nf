@@ -1,7 +1,7 @@
 
 process SONG_SUBMIT {
     tag "$meta.study_id"
-    label 'process_single'
+    //label 'process_single'
 
     pod = [secret: workflow.runName + "-secret", mountPath: "/tmp/rdpc_secret"]
 

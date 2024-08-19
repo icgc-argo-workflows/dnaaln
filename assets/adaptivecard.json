@@ -17,7 +17,7 @@
                         "size": "Large",
                         "weight": "Bolder",
                         "color": "<% if (success) { %>Good<% } else { %>Attention<%} %>",
-                        "text": "nfcore/dnaseqaln v${version} - ${runName}",
+                        "text": "icgc-argo-workflows/dnaaln v${version} - ${runName}",
                         "wrap": true
                     },
                     {

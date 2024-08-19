@@ -1,6 +1,6 @@
-# nfcore/dnaseqaln: Documentation
+# icgc-argo-workflows/dnaaln: Documentation
 
-The nfcore/dnaseqaln documentation is split into the following pages:
+The icgc-argo-workflows/dnaaln documentation is split into the following pages:
 
 - [Usage](usage.md)
 Alignment starting from local sequencing via BWA

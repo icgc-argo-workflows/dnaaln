@@ -1,4 +1,4 @@
-# nfcore/dnaseqaln: Citations
+# icgc-argo-workflows/dnaaln: Citations
 
 ## [nf-core](https://pubmed.ncbi.nlm.nih.gov/32055031/)
 

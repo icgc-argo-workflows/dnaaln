@@ -1,5 +1,5 @@
 //
-// This file holds several functions specific to the main.nf workflow in the nfcore/dnaseqaln pipeline
+// This file holds several functions specific to the main.nf workflow in the icgc-argo-workflows/dnaaln pipeline
 //
 
 class WorkflowMain {

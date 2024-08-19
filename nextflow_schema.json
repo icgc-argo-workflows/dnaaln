@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://raw.githubusercontent.com/nfcore/dnaseqaln/master/nextflow_schema.json",
-  "title": "nfcore/dnaseqaln pipeline parameters",
+  "$id": "https://raw.githubusercontent.com/icgc-argo-workflows/dnaaln/master/nextflow_schema.json",
+  "title": "icgc-argo-workflows/dnaaln pipeline parameters",
   "description": "ARGO pipepline for DNA-Seq alignment",
   "type": "object",
   "definitions": {

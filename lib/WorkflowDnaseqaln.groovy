@@ -1,5 +1,5 @@
 //
-// This file holds several functions specific to the workflow/dnaseqaln.nf in the nfcore/dnaseqaln pipeline
+// This file holds several functions specific to the workflow/dnaseqaln.nf in the icgc-argo-workflows/dnaaln pipeline
 //
 
 import groovy.text.SimpleTemplateEngine

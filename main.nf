@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    nfcore/dnaseqaln
+    icgc-argo-workflows/dnaaln
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/nfcore/dnaseqaln
+    Github : https://github.com/icgc-argo-workflows/dnaaln
 ----------------------------------------------------------------------------------------
 */
 
@@ -48,10 +48,10 @@ WorkflowMain.initialise(workflow, params, log)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { DNASEQ_ALN_WORKFLOW } from './workflows/dnaseqaln'
+include { DNASEQ_ALN_WORKFLOW } from './workflows/dnaaln'
 
 //
-// WORKFLOW: Run main nfcore/dnaseqaln analysis pipeline
+// WORKFLOW: Run main icgc-argo-workflows/dnaaln analysis pipeline
 //
 workflow NFCORE_DNASEQALN {
     DNASEQ_ALN_WORKFLOW ()

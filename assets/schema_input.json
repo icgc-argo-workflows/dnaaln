@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/nfcore/dnaseqaln/master/assets/schema_input.json",
-    "title": "nfcore/dnaseqaln pipeline - params.input schema",
+    "$id": "https://raw.githubusercontent.com/icgc-argo-workflows/dnaaln/master/assets/schema_input.json",
+    "title": "icgc-argo-workflows/dnaaln pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
     "type": "array",
     "items": {

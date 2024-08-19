@@ -1,10 +1,10 @@
 Run Name: $runName
 
 <% if (success){
-    out << "## nfcore/dnaseqaln execution completed successfully! ##"
+    out << "## icgc-argo-workflows/dnaaln execution completed successfully! ##"
 } else {
     out << """####################################################
-## nfcore/dnaseqaln execution completed unsuccessfully! ##
+## icgc-argo-workflows/dnaaln execution completed unsuccessfully! ##
 ####################################################
 The exit status of the task that caused the workflow execution to fail was: $exitStatus.
 The full error message was:
@@ -27,5 +27,5 @@ Pipeline Configuration:
 <% out << summary.collect{ k,v -> " - $k: $v" }.join("\n") %>
 
 --
-nfcore/dnaseqaln
-https://github.com/nfcore/dnaseqaln
+icgc-argo-workflows/dnaaln
+https://github.com/icgc-argo-workflows/dnaaln
